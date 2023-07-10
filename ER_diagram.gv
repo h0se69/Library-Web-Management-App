@@ -1,4 +1,5 @@
 
+
 // USE TO VIEW
 // http://magjac.com/graphviz-visual-editor/
 
@@ -13,6 +14,11 @@ digraph Lib{
     
     
     
+    book [shape = box]
+    BookID [label = <<u>BookID</u>>]
+    authors [peripheries=2]
+    genres [peripheries=2]
     
+    book -> {BookID;authors;title;genres;description}
     
 }
