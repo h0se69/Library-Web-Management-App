@@ -1,0 +1,18 @@
+
+// USE TO VIEW
+// http://magjac.com/graphviz-visual-editor/
+
+digraph Lib{
+    dir=none
+    
+    user [shape = box]
+    UserID [label = <<u>UserID</u>>]
+
+    user -> {fname;lname;email;password_salt;UserID} [dir = none]
+    
+    
+    
+    
+    
+    
+}
