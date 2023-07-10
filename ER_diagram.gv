@@ -1,24 +1,43 @@
 
-
 // USE TO VIEW
 // http://magjac.com/graphviz-visual-editor/
 
 digraph Lib{
     dir=none
     
-    user [shape = box]
-    UserID [label = <<u>UserID</u>>]
-
-    user -> {fname;lname;email;password_salt;UserID} [dir = none]
+    
+    subgraph user{
+        user [shape = box]
+        UserID [label = <<u>UserID</u>>]
+        user -> {fname;lname;email;password_salt;UserID} [dir = none]
+    }
     
     
+    subgraph book{
+        book [shape = box]
+        BookID [label = <<u>BookID</u>>]
+        authors [peripheries=2]
+        genres [peripheries=2]
+        book -> {BookID;authors;title;genres;description} [dir = none]
+    }
     
-    
-    book [shape = box]
-    BookID [label = <<u>BookID</u>>]
-    authors [peripheries=2]
-    genres [peripheries=2]
-    
-    book -> {BookID;authors;title;genres;description}
+    subgraph checkout{
+        book_checkout [shape = box]
+        performs_checkout [label= "performs checkout", shape=diamond]
+        of_book [label= "of book", shape=diamond]
+        
+        user->performs_checkout [dir=none]
+        performs_checkout -> book_checkout [dir=none] // If needed change to dir = back
+        
+        performs_checkout -> of_book [color=invis, weight = 10] // to make it look nicer, can be removed
+        
+        book -> of_book [dir=none]
+        of_book->book_checkout [dir =none]
+        
+        CheckoutID [label = <<u>CheckoutID</u>>]
+        
+        book_checkout-> {CheckoutID;checkout_time;time_given}[dir=none]
+    }
     
 }
+
