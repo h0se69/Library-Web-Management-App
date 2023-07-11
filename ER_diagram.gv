@@ -4,7 +4,8 @@
 
 digraph Lib{
     dir=none
-    
+    layout="neato"
+    overlap= false
     
     subgraph user{
         user [shape = box]
@@ -18,7 +19,9 @@ digraph Lib{
         BookID [label = <<u>BookID</u>>]
         authors [peripheries=2]
         genres [peripheries=2]
-        book -> {BookID;authors;title;genres;description} [dir = none]
+        book_rating [style=dashed]
+        book -> {BookID;authors;title;genres;description;book_rating} [dir = none]
+        
     }
     
     subgraph checkout{
@@ -37,6 +40,23 @@ digraph Lib{
         CheckoutID [label = <<u>CheckoutID</u>>]
         
         book_checkout-> {CheckoutID;checkout_time;time_given}[dir=none]
+    }
+    
+    subgraph rating { // Ratings will be done by users IN library for books IN library
+    
+        rating [shape=box]
+        // RatingID [label = <<u>RatingID</u>>] // if needed then uncomment
+        
+        rating-> {stars;text} [dir=none]
+        
+        rated_by [shape=diamond]
+        rating_of [shape=diamond]
+        
+        user->rated_by [dir=none]
+        rated_by->rating [dir=none]
+        book -> rating_of [dir=none]
+        rating_of->rating [dir=none]
+        
     }
     
 }
