@@ -4,7 +4,7 @@
 
 digraph Lib{
     dir=none
-    layout="neato"
+    layout="neato" // can try commenting out to see if neater
     overlap= false
     
     subgraph user{
@@ -20,7 +20,9 @@ digraph Lib{
         authors [peripheries=2]
         genres [peripheries=2]
         book_rating [style=dashed]
-        book -> {BookID;authors;title;genres;description;book_rating} [dir = none]
+        is_available [style=dashed]
+        
+        book -> {BookID;authors;title;genres;description;book_rating;type;is_available} [dir = none]
         
     }
     
@@ -75,5 +77,4 @@ digraph Lib{
     }
     
 }
-
 
