@@ -73,7 +73,7 @@ digraph Lib{
         reservation -> reservation_of_book [dir=none]
     }
     
-    subgraph series { // For when a book is already checked out but user wants it 
+    subgraph series {
         series [shape=box]
         SeriesID [label = <<u>SeriesID</u>>]
         
