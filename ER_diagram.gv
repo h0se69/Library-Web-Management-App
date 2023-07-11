@@ -23,7 +23,6 @@ digraph Lib{
         is_available [style=dashed]
         
         book -> {BookID;authors;title;genres;description;book_rating;type;is_available} [dir = none]
-        
     }
     
     subgraph checkout{
@@ -58,7 +57,6 @@ digraph Lib{
         rated_by->rating [dir=none]
         book -> rating_of [dir=none]
         rating_of->rating [dir=none]
-        
     }
     
     subgraph reservation { // For when a book is already checked out but user wants it 
@@ -73,8 +71,17 @@ digraph Lib{
         
         reservation_of_book -> book[dir=none]
         reservation -> reservation_of_book [dir=none]
+    }
+    
+    subgraph series { // For when a book is already checked out but user wants it 
+        series [shape=box]
+        SeriesID [label = <<u>SeriesID</u>>]
         
+        series_of_books [label= "of book", shape=diamond]
+        series->series_of_books [dir=none]
+        series_of_books -> book[dir=none]
+        
+        series->{SeriesID; name} [dir=none]
     }
     
 }
-
