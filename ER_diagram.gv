@@ -4,8 +4,8 @@
 
 digraph Lib{
     dir=none
-    layout="neato" // comment out layout if tree visualization is neater
-    overlap= false 
+    layout="neato"
+    overlap= false
     
     subgraph user{
         user [shape = box]
@@ -26,13 +26,13 @@ digraph Lib{
     
     subgraph checkout{
         book_checkout [shape = box]
-        performs_checkout [label= "performs checkout", shape=diamond]
+        performs_checkout [label= "performs \ncheckout", shape=diamond,margin="0,0"]
         of_book [label= "of book", shape=diamond]
         
         user->performs_checkout [dir=none]
-        performs_checkout -> book_checkout [dir=none] // If needed change to dir = back
+         book_checkout -> performs_checkout[dir=none] // If needed change to dir = back
         
-        performs_checkout -> of_book [color=invis, weight = 10] // to make it look nicer, can be removed
+          of_book -> performs_checkout[color=invis, weight = 10] // to make it look nicer, can be removed
         
         book -> of_book [dir=none]
         of_book->book_checkout [dir =none]
@@ -59,5 +59,21 @@ digraph Lib{
         
     }
     
+    subgraph reservation { // For when a book is already checked out but user wants it 
+        reservation [shape=box]
+        
+        reservation->{queue_position} [dir=none]
+        performs_reservation [label= "performs \nreservation", shape=diamond,margin="0,0"]
+        reservation_of_book [label= "of book", shape=diamond]
+        
+        user->performs_reservation[dir=none]
+        performs_reservation -> reservation [dir=none]
+        
+        reservation_of_book -> book[dir=none]
+        reservation -> reservation_of_book [dir=none]
+        
+    }
+    
 }
+
 
