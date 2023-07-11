@@ -4,8 +4,8 @@
 
 digraph Lib{
     dir=none
-    layout="neato"
-    overlap= false
+    layout="neato" // comment out layout if tree visualization is neater
+    overlap= false 
     
     subgraph user{
         user [shape = box]
