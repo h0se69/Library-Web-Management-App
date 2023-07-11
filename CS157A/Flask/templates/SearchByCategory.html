@@ -1,0 +1,13 @@
+{% extends "NavBar.html" %}
+
+{% block content %}
+<div>
+    <h1>Search By Category Page</h1>
+
+    {% set categories = ['cat1', 'cat2', 'cat3', 'cat4', 'cat5', 'cat6', 'cat7'] %}
+    {% for category in categories %}
+        <h5>{{category}}</h5>
+    {% endfor %}
+</div>
+
+{% endblock %}

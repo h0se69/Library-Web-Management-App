@@ -1,0 +1,10 @@
+# Python Version 3.8.0
+bcrypt==4.0.1
+beautifulsoup4==4.11.1
+Flask==2.2.2
+gunicorn==20.1.0
+h2==4.1.0
+httpx==0.23.3
+lxml==4.5.0
+mysql-connector-python==8.0.33
+python-dotenv==1.0.0

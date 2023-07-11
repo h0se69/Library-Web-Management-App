@@ -1,0 +1,61 @@
+{% extends "Navbar.html" %}
+
+{% block content %}
+<div class="container" id="login_page_container">
+    <h2>User Registration</h2>
+
+    <!-- flash msgs for errors -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('register_page') }}" method="POST">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+        </div>
+        <div class="form-group">
+            <label for="fName">First Name:</label>
+            <input type="text" class="form-control" id="fName" name="fName" placeholder="Jose" required>
+        </div>
+        <div class="form-group">
+            <label for="lName">Last Name:</label>
+            <input type="text" class="form-control" id="lName" name="lName" placeholder="Bogatyrev" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+                pattern=".{8,}" title="Password must be at least 8 characters long" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" class="form-control" id="confirm_password" placeholder="Re-Enter password"
+                pattern=".{8,}" title="Password must be at least 8 characters long" required
+                oninput="checkPasswordValidity()">
+        </div>
+
+        <script>
+            function checkPasswordValidity() {
+                var password = document.getElementById("password").value;
+                var confirmPassword = document.getElementById("confirm_password").value;
+                var confirmPasswordInput = document.getElementById("confirm_password");
+
+                if (password !== confirmPassword) {
+                    confirmPasswordInput.setCustomValidity("Passwords do not match.");
+                } else {
+                    confirmPasswordInput.setCustomValidity("");
+                }
+            }
+        </script>
+
+        <br /> <button type="submit" class="btn btn-primary">Login</button>
+        <p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login_page')}}"> Login here</a>
+        </p>
+    </form>
+</div>
+
+{% endblock %}

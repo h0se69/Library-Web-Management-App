@@ -1,0 +1,11 @@
+{% extends "NavBar.html" %}
+
+{% block content %}
+<div>
+    <h1>All Books Page</h1>
+    {% for x in range(20) %}
+        <h5>{{x}}</h5>
+    {% endfor %}
+</div>
+
+{% endblock %}
