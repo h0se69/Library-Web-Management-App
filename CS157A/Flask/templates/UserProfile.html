@@ -1,0 +1,62 @@
+{% extends "Navbar.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <h2 class="mb-3">Your Profile</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>ID: {{userInformation.user_id}}</p>
+                            <p>Name: {{userInformation.first_name}} {{userInformation.last_name}}</p>
+                            <p>Email: {{userInformation.email}}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <h4 class="mt-2"><span class="fa fa-clock-o ion-clock float-right"> Password </h4>
+                                <form>
+                                    <div class="form-group">
+                                        <label for="password">Current Password:</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+                                            name="password">
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <label for="password">NEW Password:</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+                                            name="password">
+                                    </div>
+                                    <br/>
+                                    <button type="button" class="btn btn-success">Update Password</button>
+                                </form>
+
+                        </div>
+                        <div class="col-md-12">
+                            <h4 class="mt-2"><span class="fa fa-clock-o ion-clock float-right">Recent Activity</h4>
+                            <table class="table table-sm table-hover table-striped">
+                                <tbody>                                    
+                                    {% for x in range(10) %}
+                                        <tr>
+                                            <td>
+                                                <strong>[Checked-Out]</strong> Harry Potter The {{x}} Book</strong>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--/row-->
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            <h2>Read-Later and Reservation List here?</h2>            
+        </div>
+    </div>
+</div>
+
+{% endblock %}
