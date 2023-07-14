@@ -15,7 +15,7 @@ class Books():
         name VARCHAR(128) NOT NULL,
         description VARCHAR(1024),                  -- for now can be null
         publish_date DATE,                           -- for now can be null
-        type ENUM('PHYSICAL', 'DIGITAL') NOT NULL,
+        type ENUM('PHYSICAL', 'DIGITAL') NOT NULL
         );
         """
 
