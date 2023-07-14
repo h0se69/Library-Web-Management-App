@@ -82,6 +82,8 @@ class Users():
                     return first_name, email, user_id
                 else:
                     return False
+            else:
+                return False
         else:
             return False
         

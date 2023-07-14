@@ -1,0 +1,11 @@
+{% extends "NavBar.html" %}
+
+{% block content %}
+<div>
+    <h1>Results: {{book_count}}</h1>
+    {% for book in books %}
+        <h5>{{book}}</h5>
+    {% endfor %}
+</div>
+
+{% endblock %}
