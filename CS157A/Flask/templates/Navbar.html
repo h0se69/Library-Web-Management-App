@@ -35,10 +35,18 @@
                         <a class="nav-link" href="{{url_for('best_sellers_page')}}">Best Sellers</a>
                     </li>
                     <li class="nav-item d-flex align-items-center" style="width: 80%; margin-right: 5px;">
-                        <form class="d-flex" role="search" action="{{url_for('login_page')}}" style="width: 100%;">
-                            <input class="form-control me-2" type="search" placeholder="Search Book Title"
-                                aria-label="Search">
+                        <form class="d-flex" role="search" action="" method="POST" style="width: 100%;" onsubmit="updateAction()">
+                            <input class="form-control me-2" type="search" placeholder="Search Book Title" aria-label="Search" name="search_input" id="search_input">
+                            <button class="btn btn-primary" type="submit">Search</button>
                         </form>
+                        
+                        <script>
+                            function updateAction() {
+                                const searchInput = document.getElementById("search_input").value;
+                                const form = document.querySelector('form');
+                                form.action = `/search-books/${encodeURIComponent(searchInput)}`;
+                            }
+                        </script>
                     </li>
                     <li class="nav-item" style="margin-right: 5px;">
                         <a class="nav-link" href="#">Something else</a>

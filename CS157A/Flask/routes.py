@@ -3,6 +3,9 @@ from CS157A.Flask import flask_obj
 from flask import render_template, request, flash, redirect, url_for, session, g
 from CS157A.Database.Models.Users import Users
 from CS157A.Flask.Sessions import set_user_session
+from CS157A.HTTP.GoogleBooksAPI import request_books
+from CS157A.Database.Models.Books import Books
+import asyncio
 
 
 flask_obj.secret_key = 'test-key'
@@ -110,7 +113,10 @@ def best_sellers_page():
 @flask_obj.route('/all-books', methods=["GET"])
 @isLoggedIn
 def all_books_page():
-    return render_template('AllBooks.html')
+    response = Books().get_all_books()
+    book_list = response[0]
+    book_count = response[1]
+    return render_template("ViewBooks.html", books=book_list, book_count=book_count)
 
 @flask_obj.route('/user-profile', methods=["GET"])
 @login_required
@@ -119,3 +125,17 @@ def user_profile_page():
     if(userInformation is None):
         return "Go back and retry..."
     return render_template('UserProfile.html', userInformation=userInformation)
+
+@flask_obj.route('/add-books/<string:search_input>', methods=["GET", "POST"])
+def request_google_books_api(search_input:str):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    response = loop.run_until_complete(request_books(search_input))
+    return response
+
+@flask_obj.route('/search-books/<string:search_input>', methods=["POST"])
+def search_books_api(search_input:str):
+    response = Books().get_books_off_search(search_input)
+    book_list = response[0]
+    book_count = response[1]
+    return render_template("ViewBooks.html", books=book_list, book_count=book_count)
