@@ -31,11 +31,8 @@ class Books():
         query1 = """
         CREATE TABLE IF NOT EXISTS LIBRARY_BOOKS(
             book_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-            ISBN VARCHAR(20) NOT NULL,                  -- I remember there is ISBN 10, 
-                                                        -- ISBN 13 and they have dashes, this might
-                                                        -- change depending on data scraping
-            -- page_amt INTEGER NOT NULL -- add later if scraping allows                
-            
+            ISBN VARCHAR(20) NOT NULL,                  -- I remember there is ISBN 10, ISBN 13 and they have dashes, this might change depending on data scraping
+            page_amt INTEGER NULL,                      -- can be null if api does not provide             
             CONSTRAINT fk_book_library FOREIGN KEY(ISBN) REFERENCES BOOKS(ISBN)
         );
         """
@@ -44,7 +41,7 @@ class Books():
         query2 = """
         CREATE TABLE IF NOT EXISTS BOOK_GENRES(
             ISBN VARCHAR(20) NOT NULL,                   
-            genre VARCHAR(32) NOT NULL, 
+            genre VARCHAR(255) NOT NULL, 
             PRIMARY KEY (ISBN, genre),    
             CONSTRAINT fk_book_genre FOREIGN KEY(ISBN) REFERENCES BOOKS(ISBN)                                             
         );
@@ -74,8 +71,37 @@ class Books():
             mycursor.execute(query, (isbn, name, description, publish_date, book_type))
             mydb.commit()
         except mysql.connector.errors.IntegrityError as duplicateBook:
-            print(f"duplicateBook_Error: {duplicateBook}")
+            print(f"duplicateBook_Error_add_book: {duplicateBook}")
 
+    def add_library_book(self, isbn:str, page_amount:int=None):
+        try:
+            query = f"""
+                INSERT INTO {self.library_books_table} (ISBN, page_amt)
+                VALUES (%s, %s)"""
+            mycursor.execute(query, (isbn, page_amount))
+            mydb.commit()
+        except mysql.connector.errors.IntegrityError as duplicateBook:
+            print(f"duplicateBook_Error_add_library_book: {duplicateBook}")
+
+    def add_book_author(self, isbn:str, author_s:str):
+        try:
+            query = f"""
+                INSERT INTO {self.books_authors_table} (ISBN, author)
+                VALUES (%s, %s)"""
+            mycursor.execute(query, (isbn, author_s))
+            mydb.commit()
+        except mysql.connector.errors.IntegrityError as duplicateBook:
+            print(f"duplicateBook_Error_add_book_author: {duplicateBook}")
+
+    def add_book_genres(self, isbn:str, genre:str):
+        try:
+            query = f"""
+                INSERT INTO {self.books_genre_table} (ISBN, genre)
+                VALUES (%s, %s)"""
+            mycursor.execute(query, (isbn, genre))
+            mydb.commit()
+        except mysql.connector.errors.IntegrityError as duplicateBook:
+            print(f"duplicateBook_Error_add_book_genres: {duplicateBook}")
 
     def get_all_books(self):
         query = f"""
@@ -85,8 +111,10 @@ class Books():
         mycursor.execute(query)
         response = mycursor.fetchall()
         book_count = len(response)
-
-        return response, book_count # list response | book count
+        
+        columns = [column[0] for column in mycursor.description]
+        response_dict = [dict(zip(columns, row)) for row in response]
+        return response_dict, book_count # list response | book count
 
     def get_books_off_search(self, search_value:str):
         query = f"""
@@ -96,5 +124,8 @@ class Books():
         """
         mycursor.execute(query, (f"%{search_value}%", f"%{search_value}%"))
         response = mycursor.fetchall()
+        columns = [column[0] for column in mycursor.description]
+        response_dict = [dict(zip(columns, row)) for row in response]
+
         book_count = len(response)
-        return response, book_count # list response | book count
+        return response_dict, book_count # list response | book count

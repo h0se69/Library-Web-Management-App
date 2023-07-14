@@ -42,26 +42,41 @@ async def request_books(search_value:str):
 def parse_book_data(json_response: json):
     data = []
     books = json_response['items']
-    for book in books:
+    BooksObj = Books()
 
+    for book in books:
         volume_info = book.get('volumeInfo', {})
         title = volume_info.get('title', None)
         published_date = get_publish_date(volume_info=volume_info)
         description = volume_info.get('description', None)
-        page_count = volume_info.get('pageCount', None)
-
+        page_count = get_pages(volume_info=volume_info)
+        authors_publisher = get_author_publisher(volume_info=volume_info)
+        category_genre = get_category_genre(volume_info=volume_info)
         image = get_image(volume_info=volume_info)
         isbn_value = get_isbn(volume_info=volume_info)
         book_type = get_book_type(book_info=book)
 
-        data.append((isbn_value, title, book_type,description, published_date))
+        data.append((isbn_value, title, book_type, description, published_date))
 
-        Books().add_book(isbn=isbn_value, 
-                         name=title, 
-                         book_type=book_type,
-                         description=description,
-                         publish_date=published_date
-                         )
+        BooksObj.add_book(
+            isbn=isbn_value, 
+            name=title, 
+            book_type=book_type,
+            description=description,
+            publish_date=published_date
+            )
+        BooksObj.add_library_book(
+            isbn=isbn_value,
+            page_amount=page_count
+            )
+        BooksObj.add_book_author(
+            isbn=isbn_value,
+            author_s=authors_publisher
+            )
+        BooksObj.add_book_genres(
+            isbn=isbn_value,
+            genre=category_genre
+            )
     return data
 
 def get_isbn(volume_info: dict):
@@ -81,6 +96,13 @@ def get_isbn(volume_info: dict):
         isbn_value = str(uuid.uuid4())[0:11] #no isbn in the data
     
     return isbn_value
+
+def get_pages(volume_info: dict):
+    page_count = volume_info.get('pageCount', None)
+    if(page_count == "0" or page_count == 0):
+        return None
+    else:
+        return page_count
 
 def get_image(volume_info: dict):
     image_links = volume_info.get('imageLinks', None)
@@ -105,7 +127,7 @@ def get_book_type(book_info: dict):
 
     return book_type
 
-def get_publish_date(volume_info):
+def get_publish_date(volume_info: dict):
     publish_date_data = volume_info.get('publishedDate', None)
 
     if(publish_date_data is not None):
@@ -118,6 +140,25 @@ def get_publish_date(volume_info):
     else:
         return None
 
+def get_author_publisher(volume_info: dict):
+    authors_list = volume_info.get('authors', None)
+    if(authors_list is not None):
+        authors = ",".join(str(author) for author in authors_list)
+        return authors
+    else:
+        publisher = volume_info.get("publisher", None)
+        if(publisher is None):
+            return "NO_AUTHOR"
+        else:
+            return publisher
+
+def get_category_genre(volume_info: dict):
+    categories_list = volume_info.get('categories', None)
+    if(categories_list is not None):
+        categories = ",".join(str(category) for category in categories_list)
+        return categories
+    else:
+        return "NO_GENRE"
 
 def check_date_format(publish_date:str):
     formats = [
