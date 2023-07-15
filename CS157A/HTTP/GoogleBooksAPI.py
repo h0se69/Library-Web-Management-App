@@ -63,11 +63,11 @@ def parse_book_data(json_response: json):
             name=title, 
             book_type=book_type,
             description=description,
-            publish_date=published_date
+            publish_date=published_date,
+            page_amount=page_count
             )
         BooksObj.add_library_book(
-            isbn=isbn_value,
-            page_amount=page_count
+            isbn=isbn_value
             )
         BooksObj.add_book_author(
             isbn=isbn_value,
@@ -99,7 +99,7 @@ def get_isbn(volume_info: dict):
 
 def get_pages(volume_info: dict):
     page_count = volume_info.get('pageCount', None)
-    if(page_count == "0" or page_count == 0):
+    if(page_count == "0" or page_count == 0 or None or "None"):
         return None
     else:
         return page_count
