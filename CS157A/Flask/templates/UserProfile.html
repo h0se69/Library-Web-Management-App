@@ -54,7 +54,52 @@
             </div>
         </div>
         <div class="col-lg-4 order-lg-1 text-center">
-            <h2>Read-Later and Reservation List here?</h2>            
+            <h3>Read Later</h3>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Title</th>
+                        <th>Date Added</th>
+                    </tr>
+                </thead>
+                <style>
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                
+                    th, td {
+                        border: 1px solid #ccc;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                
+                    /* Style the table header */
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                
+                    /* Truncate the text in table cells */
+                    .truncate {
+                        max-width: 200px; /* Adjust the width as needed */
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                </style>
+                
+                <tbody>
+                    {% for book in read_later_list %}
+                    <tr>
+                        <td class="truncate">{{ book['ISBN'] }}</td>
+                        <td class="truncate">{{ book['name'] }}</td>
+                        <td class="truncate">{{ book['date_added'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table> 
         </div>
     </div>
 </div>

@@ -9,30 +9,33 @@
             display: flex;
             align-items: flex-start;
             margin-bottom: 20px;
-            border: 2px solid #ccc; /* Add a 2px grey border */
-            padding: 10px; /* Add padding to create space between the border and the content */
+            border: 2px solid #ccc;
+            /* Add a 2px grey border */
+            padding: 10px;
+            /* Add padding to create space between the border and the content */
         }
 
         p {
-            font-size : 16px;
-            padding : 0;
-            margin : 0;
-            line-height : 16px;
+            font-size: 16px;
+            padding: 0;
+            margin: 0;
+            line-height: 16px;
         }
-        
+
         .record-image {
-            width: 18%; /* Adjust the width as needed might be better to change to px */ 
+            width: 18%;
+            /* Adjust the width as needed might be better to change to px */
             margin-right: 10px;
             position: relative;
         }
-        
+
         .record-image-container {
             width: 100%;
             padding-top: 250px;
             position: relative;
             overflow: hidden;
         }
-        
+
         .record-image img {
             width: 100%;
             height: 100%;
@@ -42,28 +45,32 @@
             top: 0;
             left: 0;
         }
-        
+
         .record-details {
             flex: 1;
         }
-        
+
         .record-title {
             font-size: 24px;
-            line-height : 5px; /* auto padding takes care of space */
+            line-height: 5px;
+            /* auto padding takes care of space */
         }
-        
+
         .record-contributors {
             margin-top: 10px;
             font-weight: normal;
         }
-        
+
         .record-description {
             margin-top: 10px;
             max-height: 7em;
             overflow: auto;
-            line-height: 1.2em; /* Adjust this value as needed */
-            border: 2px solid #ccc; /* Add the grey outline */
+            line-height: 1.2em;
+            /* Adjust this value as needed */
+            border: 2px solid #ccc;
+            /* Add the grey outline */
         }
+
         .record-details .buttons {
             display: flex;
             justify-content: flex-end;
@@ -75,6 +82,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Results: {{book_count}}</h1>
 
@@ -82,26 +90,56 @@
         {% set title = book['name'] %}
         {% set isbn = book['ISBN'] %}
         {% set description = book['description'] %}
+        {% set author = book['author'] %}
+        {% set image = book['image'] %}
         <div class="record-container">
             <div class="record-image">
                 <div class="record-image-container">
-                    <img src="https://m.media-amazon.com/images/I/710ESoXqVPL._SY522_.jpg" alt="Record Image 1">
+                    <img src="{{image}}" alt="Record Image 1">
                 </div>
             </div>
             <div class="record-details">
-                <h2 class="record-title">{{title}}</h2>
-                <p class="record-contributors">By: J.K. Rowling</p>
-                <p class="record-description" id="description">{{description}}</p>
+                <h2 class="record-title" id="title">{{ title }}</h2>
+                <p class="record-contributors" id="author">By: {{ author }}</p>
+                <p class="record-description" id="description">{{ description }}</p>
                 <div class="buttons">
-                    <button type="button" class="btn btn-primary">Add to Read Later</button>
-                    <button type="button" class="btn btn-success">View Info.</button>
+                    <!-- Create a traditional HTML form -->
+                    <form id="add_to_read_later_form_{{ isbn }}" method="POST">
+                        <!-- Hidden input fields to hold the book data mainly the ISBN -->
+                        <input type="hidden" name="book_isbn" value="{{ isbn }}">
+                        <!-- Add a custom attribute to identify the form -->
+                        <button type="submit" class="btn btn-primary" data-form-id="{{ isbn }}">Add to Read Later</button>
+                    </form>
+                    <button type="button" class="btn btn-success" id="view_info">View Info.</button>
                 </div>
             </div>
-            
         </div>
     {% endfor %}
-    
-    
+
+    <script>
+        $(document).ready(function () {
+            $("form[id^='add_to_read_later_form_']").on("submit", function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: "{{url_for('add_to_read_later_api')}}",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (response) {
+                        if(response.isLoggedIn){
+                            console.log(response.success)
+                        }
+                        else{
+                            window.location.href = "{{url_for('login_page')}}";
+                        }
+                    },
+                    error: function (error) {
+                        console.log("read later ajax error:", error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 {% endblock %}

@@ -5,10 +5,6 @@ import mysql.connector.errors
 
 class Books():
     def __init__(self):
-        self.books_table = "BOOKS"
-        self.library_books_table = "LIBRARY_BOOKS"
-        self.books_genre_table = "BOOK_GENRES"
-        self.books_authors_table = "BOOK_AUTHORS"
         self.create_books_table()
         
     def create_books_table(self):
@@ -23,7 +19,8 @@ class Books():
             description VARCHAR(4096),          -- for now can be null
             publish_date DATE,                  -- for now can be null
             page_amt INTEGER,                   -- for now can be null
-            type ENUM('PHYSICAL', 'DIGITAL') NOT NULL
+            type ENUM('PHYSICAL', 'DIGITAL') NOT NULL,
+            image VARCHAR(1024) NULL -- can be null incase no image is provided
         );
         """
 
@@ -51,7 +48,7 @@ class Books():
         query3 = """
         CREATE TABLE IF NOT EXISTS BOOK_AUTHORS(
             ISBN VARCHAR(20) NOT NULL,                   
-            author VARCHAR(128) NOT NULL, 
+            author VARCHAR(512) NOT NULL, 
             PRIMARY KEY (ISBN, author),    
             CONSTRAINT fk_book_author FOREIGN KEY(ISBN) REFERENCES BOOKS(ISBN)                                             
         );
@@ -63,12 +60,12 @@ class Books():
 
     # watch the argument order when adding
     # needed to move descrip/date to end due to default value None
-    def add_book(self, isbn:str, name:str, book_type:str, description: str=None, publish_date:str=None, page_amount:int=None):
+    def add_book(self, isbn:str, name:str, book_type:str, description: str=None, publish_date:str=None, page_amount:int=None, image:str=None):
         try:
             query = f"""
-                INSERT INTO {self.books_table} (ISBN, name, description, publish_date, type, page_amt)
-                VALUES (%s, %s, %s, %s, %s, %s)"""
-            mycursor.execute(query, (isbn, name, description, publish_date, book_type, page_amount))
+                INSERT INTO BOOKS (ISBN, name, description, publish_date, type, page_amt, image)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            mycursor.execute(query, (isbn, name, description, publish_date, book_type, page_amount, image))
             mydb.commit()
         except mysql.connector.errors.IntegrityError as duplicateBook:
             print(f"duplicateBook_Error_add_book: {duplicateBook}")
@@ -76,7 +73,7 @@ class Books():
     def add_library_book(self, isbn:str):
         try:
             query = f"""
-                INSERT INTO {self.library_books_table} (ISBN)
+                INSERT INTO LIBRARY_BOOKS (ISBN)
                 VALUES (%s)"""
             mycursor.execute(query, (isbn,))
             mydb.commit()
@@ -86,7 +83,7 @@ class Books():
     def add_book_author(self, isbn:str, author_s:str):
         try:
             query = f"""
-                INSERT INTO {self.books_authors_table} (ISBN, author)
+                INSERT INTO BOOK_AUTHORS (ISBN, author)
                 VALUES (%s, %s)"""
             mycursor.execute(query, (isbn, author_s))
             mydb.commit()
@@ -96,17 +93,19 @@ class Books():
     def add_book_genres(self, isbn:str, genre:str):
         try:
             query = f"""
-                INSERT INTO {self.books_genre_table} (ISBN, genre)
+                INSERT INTO BOOK_GENRES (ISBN, genre)
                 VALUES (%s, %s)"""
             mycursor.execute(query, (isbn, genre))
             mydb.commit()
         except mysql.connector.errors.IntegrityError as duplicateBook:
             print(f"duplicateBook_Error_add_book_genres: {duplicateBook}")
 
+
     def get_all_books(self):
         query = f"""
             SELECT * 
-            FROM {self.books_table}
+            FROM BOOKS
+            JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
         """
         mycursor.execute(query)
         response = mycursor.fetchall()
@@ -119,10 +118,12 @@ class Books():
     def get_books_off_search(self, search_value:str):
         query = f"""
             SELECT *
-            FROM {self.books_table}
-            WHERE name LIKE %s OR ISBN LIKE %s
+            FROM BOOKS
+            JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
+            WHERE name LIKE %s
         """
-        mycursor.execute(query, (f"%{search_value}%", f"%{search_value}%"))
+        mycursor.execute(query, (f"%{search_value}%", ))
+
         response = mycursor.fetchall()
         columns = [column[0] for column in mycursor.description]
         response_dict = [dict(zip(columns, row)) for row in response]
@@ -130,6 +131,36 @@ class Books():
         book_count = len(response)
         return response_dict, book_count # list response | book count
     
+    def get_books_off_genre(self, genre):
+        query = f"""
+            SELECT DISTINCT *
+            FROM BOOKS B
+            JOIN BOOK_AUTHORS BA 
+                ON B.ISBN=BA.ISBN
+            JOIN BOOK_GENRES BG 
+                ON B.ISBN=BG.ISBN
+            WHERE BG.genre='{genre}'
+        """
+        mycursor.execute(query)
+
+        response = mycursor.fetchall()
+        columns = [column[0] for column in mycursor.description]
+        response_dict = [dict(zip(columns, row)) for row in response]
+
+        book_count = len(response)
+        return response_dict, book_count # list response | book count
+
+    def get_all_book_genres(self):
+        query = f"""
+            SELECT DISTINCT genre
+            FROM BOOK_GENRES
+            ORDER BY genre
+        """
+        mycursor.execute(query,)
+        response = mycursor.fetchall()
+        removed_tuples_response = [genre[0] for genre in response]
+        return removed_tuples_response
+
     # Limited to 100 results
     # By default returns all books
     # WARNING: This uses AND for everything (not OR)

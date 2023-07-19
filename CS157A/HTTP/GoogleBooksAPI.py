@@ -64,7 +64,8 @@ def parse_book_data(json_response: json):
             book_type=book_type,
             description=description,
             publish_date=published_date,
-            page_amount=page_count
+            page_amount=page_count,
+            image=image
             )
         BooksObj.add_library_book(
             isbn=isbn_value

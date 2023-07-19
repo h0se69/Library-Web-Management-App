@@ -96,7 +96,6 @@ class Users():
         mycursor.execute(query)
         response = mycursor.fetchone()
         if(response):
-            print(response)
             user_id = response[0]
             first_name = response[1]
             last_name = response[2]

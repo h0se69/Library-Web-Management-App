@@ -1,6 +1,7 @@
 from functools import wraps
+from CS157A.Database.Models.BookList import BookLists
 from CS157A.Flask import flask_obj
-from flask import render_template, request, flash, redirect, url_for, session, g
+from flask import render_template, request, flash, redirect, url_for, session, g, jsonify
 from CS157A.Database.Models.Users import Users
 from CS157A.Flask.Sessions import set_user_session
 from CS157A.HTTP.GoogleBooksAPI import request_books
@@ -23,38 +24,35 @@ def get_user_first_name():
 def get_user_id():
     return session.get('user_id')
 
-def isLoggedIn(f):
-    @wraps(f)
-    def decorated_function(*args, **kwards):
-        g.authenticated = is_logged_in()
-        g.user_email = get_user_email()
-        g.user_first_name = get_user_first_name()
-        g.user_id = get_user_id()
-        return f(*args, **kwards)
-
-    return decorated_function
-
 def login_required(f):
     @wraps(f)
-    def decorated_function(*args, **kwards):
+    def decorated_function(*args, **kwargs):
         g.authenticated = is_logged_in()
         if g.authenticated:
             g.user_email = get_user_email()
             g.user_first_name = get_user_first_name()
             g.user_id = get_user_id()
-            return f(*args, **kwards)
+            return f(*args, **kwargs)
         else:
-            return redirect(url_for('login_page'), code=302)
+            return redirect(url_for('login_page'))
+
     return decorated_function
+
+@flask_obj.before_request
+def before_request():
+    g.authenticated = is_logged_in()
+    if g.authenticated:
+        g.user_email = get_user_email()
+        g.user_first_name = get_user_first_name()
+        g.user_id = get_user_id()
+
 # # #
 
 @flask_obj.route('/', methods=["GET"])
-@isLoggedIn
 def home_page():
     return render_template('HomePage.html')
 
 @flask_obj.route('/register', methods=["GET", "POST"])
-@isLoggedIn
 def register_page():
     if(request.method=="POST" and all(key in request.form for key in ['email', 'first_name', 'last_name', 'password'])):
         email = request.form['email']
@@ -76,7 +74,6 @@ def register_page():
     return render_template('RegisterPage.html')
 
 @flask_obj.route('/login', methods=["GET", "POST"])
-@isLoggedIn
 def login_page():
     if(request.method == "POST" and all(key in request.form for key in ["email", "password"])):
         email = request.form["email"]
@@ -95,23 +92,25 @@ def login_page():
     return render_template('LoginPage.html')
 
 @flask_obj.route("/logout", methods=['GET'])
-@isLoggedIn
+@login_required
 def logout():
     session.clear()
     return redirect(url_for('home_page'))
 
 @flask_obj.route('/search-by-category', methods=["GET"])
-@isLoggedIn
 def search_by_category_page():
-    return render_template('SearchByCategory.html')
+    categories = Books().get_all_book_genres()
+    return render_template('SearchByCategory.html', categories=categories)
 
 @flask_obj.route('/best-sellers', methods=["GET"])
-@isLoggedIn
 def best_sellers_page():
     return render_template('BestSellers.html')
 
+@flask_obj.route('/advanced-search', methods=["GET"])
+def advanced_search_page():
+    return render_template('AdvancedSearch.html')
+
 @flask_obj.route('/all-books', methods=["GET"])
-@isLoggedIn
 def all_books_page():
     response = Books().get_all_books()
     book_list = response[0]
@@ -122,20 +121,45 @@ def all_books_page():
 @login_required
 def user_profile_page():
     userInformation = Users().get_user_information(user_id=g.user_id, email=g.user_email)
+
+    read_later_list = BookLists().get_user_read_later(user_id=g.user_id)
+
     if(userInformation is None):
         return "Go back and retry..."
-    return render_template('UserProfile.html', userInformation=userInformation)
+    return render_template('UserProfile.html', userInformation=userInformation, read_later_list=read_later_list)
 
 @flask_obj.route('/add-books/<string:search_input>', methods=["GET", "POST"])
+@login_required
 def request_google_books_api(search_input:str):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     response = loop.run_until_complete(request_books(search_input))
     return response
 
+@flask_obj.route('/add-to-read-later', methods=["POST"])
+@login_required
+def add_to_read_later_api():
+    if(request.method == "POST"):
+        user_id = g.user_id
+        book_isbn = request.form.get('book_isbn')
+        response = BookLists().add_to_read_later(user_id=user_id, book_isbn=book_isbn)
+        if(response):
+            return jsonify({"Success": True, "isLoggedIn": is_logged_in()})
+        else:
+            return jsonify({"Success": False, "isLoggedIn": is_logged_in()})
+
+
+@flask_obj.route('/search-books', methods=["POST"])
 @flask_obj.route('/search-books/<string:search_input>', methods=["POST"])
-def search_books_api(search_input:str):
-    response = Books().get_books_off_search(search_input)
-    book_list = response[0]
-    book_count = response[1]
+def search_books_api(search_input=None):
+    genre = request.args.get('genre')
+    if(genre):
+        response = Books().get_books_off_genre(genre=genre)
+        book_list = response[0]
+        book_count = response[1]
+    else:
+        response = Books().get_books_off_search(search_input)
+        book_list = response[0]
+        book_count = response[1]
+
     return render_template("ViewBooks.html", books=book_list, book_count=book_count)
