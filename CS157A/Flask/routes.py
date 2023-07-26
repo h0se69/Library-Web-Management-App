@@ -125,7 +125,7 @@ def user_profile_page():
     read_later_list = BookLists().get_user_read_later(user_id=g.user_id)
 
     if(userInformation is None):
-        return "Go back and retry..."
+        return "Go back and retry... [NO_USER_INFORMATION_LOADED | TRY_CLEARING_COOKIES]"
     return render_template('UserProfile.html', userInformation=userInformation, read_later_list=read_later_list)
 
 @flask_obj.route('/add-books/<string:search_input>', methods=["GET", "POST"])
@@ -163,3 +163,23 @@ def search_books_api(search_input=None):
         book_count = response[1]
 
     return render_template("ViewBooks.html", books=book_list, book_count=book_count)
+
+@flask_obj.route("/view-book", methods=["GET"])
+def get_book_api(isbn_value=None):
+    isbn_value = request.args.get('isbn_value')
+    if(isbn_value):
+        book_data_response = Books().get_specific_book(isbn=isbn_value)
+    else:
+        book_data_response = "GO_BACK_AND_TRY_AGAIN"
+
+    return render_template("SpecificBook.html", book_data=book_data_response)
+
+
+@flask_obj.route("/remove-read-later-book", methods=["POST"])
+def remove_read_later_api():
+    if(request.method == "POST"):
+        book_isbn = request.form.get('book_isbn')
+        remove_response = BookLists().remove_from_read_later(user_id=g.user_id, isbn=book_isbn)
+        return jsonify({
+            "REMOVE_RESPONSE": remove_response
+        })

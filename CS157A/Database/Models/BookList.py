@@ -35,7 +35,7 @@ class BookLists():
             return False
         return True
 
-    def get_user_read_later(self, user_id):
+    def get_user_read_later(self, user_id:int):
         query = f"""
             SELECT B.ISBN, B.name, UR.date_added
             FROM BOOKS B
@@ -49,3 +49,14 @@ class BookLists():
         dict_response = [dict(zip(columns, row)) for row in response]
 
         return dict_response
+    
+    def remove_from_read_later(self, user_id:int, isbn:str):
+        try:
+            query = f"""
+                DELETE FROM USERS_READ_LATER
+                WHERE user_id={user_id} AND book_isbn='{isbn}'
+            """
+            mycursor.execute(query)
+            return True
+        except:
+            return False

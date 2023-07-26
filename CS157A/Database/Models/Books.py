@@ -161,6 +161,25 @@ class Books():
         removed_tuples_response = [genre[0] for genre in response]
         return removed_tuples_response
 
+    def get_specific_book(self, isbn:str):
+        query = f"""
+            SELECT *
+            FROM BOOKS B
+            JOIN BOOK_AUTHORS BA 
+                ON B.ISBN=BA.ISBN
+            JOIN BOOK_GENRES BG
+                ON B.ISBN=BG.ISBN
+            JOIN LIBRARY_BOOKS LB 
+                ON B.ISBN=LB.ISBN
+            WHERE B.ISBN='{isbn}'
+        """
+        mycursor.execute(query,)
+        response = mycursor.fetchall()
+        columns = [col[0] for col in mycursor.description]
+        dict_response = [dict(zip(columns, row)) for row in response]
+
+        return dict_response
+
     # Limited to 100 results
     # By default returns all books
     # WARNING: This uses AND for everything (not OR)

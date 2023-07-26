@@ -1,0 +1,151 @@
+{% extends "NavBar.html" %}
+
+{% block content %}
+
+{% set book_image = book_data[0]['image'] %}
+{% set book_title = book_data[0]['name'] %}
+{% set book_isbn = book_data[0]['ISBN'] %}
+{% set book_description = book_data[0]['description'] %}
+{% set book_author = book_data[0]['author'] %}
+{% set book_publication = book_data[0]['publish_date'] %}
+{% set book_page_count = book_data[0]['page_amt'] %}
+{% set book_type = book_data[0]['type'] %}
+{% set book_genre = book_data[0]['genre'] %}
+{% set book_book_id = book_data[0]['book_id'] %}
+
+<div>
+    <section style="background-color: #eee;">
+        <div>
+            <form>
+                <input type="button" class="btn btn-outline-primary" data-mdb-ripple-color="dark" value="Go back." onclick="history.go(-1)">
+            </form>
+        </div>
+        <div class="container py-5">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-12 col-xl-10">
+                    <div class="card shadow-0 border rounded-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                    <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                        <img src="{{book_image}}" class="w-100" />
+                                        <a href="#!">
+                                            <div class="hover-overlay">
+                                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);">
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-6 col-xl-6">
+                                    <h5>{{book_title}}</h5>
+                                    <div class="d-flex flex-row">
+                                        <span>{{book_author}}</span>
+                                    </div>
+                                    <div class="mt-1 mb-0 text-muted small">
+                                        <span>Rating: </span>
+                                        <i class="text-danger">1</i>
+                                        <i class="text-danger">2</i>
+                                        <i class="text-danger">3</i>
+                                        <i class="text-danger">4</i>
+                                        <i class="text-danger">5</i>
+                                        <i class="text-primary">Total Reviews(idk if we will use stars or a num
+                                            system)</i>
+                                    </div>
+                                    <p class="text-truncate mb-4 mb-md-0">
+                                        {{book_description}}
+                                    </p>
+                                </div>
+                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                    <h6 class="text-danger">Available Copies: xx</h6>
+                                    <h6 class="text-success">Total Copies: xx</h6>
+                                    <div class="d-flex flex-column mt-4">
+                                        <button class="btn btn-success btn-sm" type="button">Checkout? Reserve?</button>
+                                        <form id="add_to_read_later_form_{{ book_isbn }}" method="POST">
+                                            <input type="hidden" name="book_isbn" value="{{ book_isbn }}"> <br>
+                                            <button type="submit" class="btn btn-primary btn-sm"
+                                                data-form-id="{{ book_isbn }}" style="width: 100%;">Add to Read
+                                                Later</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section style="background-color: #eee;" id="detail_section">
+        <div class="container py-5" style="margin-top: -80px;">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-12 col-xl-10">
+                    <div class="card shadow-0 border rounded-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                    <div>
+                                        <h1>About</h1>
+                                        <div class="mt-1 mb-0 text-muted small">
+                                            <span>Book ID: {{book_book_id}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-6 col-xl-6">
+                                    <h5>Author(s)</h5>
+                                    <span>{{book_author}}</span>
+                                    <h5>Publication</h5>
+                                    <span>{{book_publication}}</span>
+                                    <h5>Number of Pages</h5>
+                                    <span>{{book_page_count}}</span>
+                                    <h5>Book Type</h5>
+                                    <span>{{book_type}}</span>
+                                </div>
+                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                    <h6 class="text">Genre(s)</h6>
+                                    <ul class="text">{{book_genre}}</ul>
+                                </div>
+                                <div class="col-md-12 col-lg-12 col-xl-12 mt-4">
+                                    <h3>Summary</h3>
+                                    <p>{{book_description}}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function () {
+            $("form[id^='add_to_read_later_form_']").on("submit", function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: "{{url_for('add_to_read_later_api')}}",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.isLoggedIn) {
+                            if(response.Success == false){
+                                alert("Already in your read later list...")
+                            }
+                            else{
+                                alert("Added to your read later list")
+                            }
+                        }
+                        else {
+                            window.location.href = "{{url_for('login_page')}}";
+                        }
+                    },
+                    error: function (error) {
+                        console.log("read later ajax error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+
+{% endblock %}

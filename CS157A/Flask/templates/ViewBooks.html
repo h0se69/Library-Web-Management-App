@@ -103,14 +103,11 @@
                 <p class="record-contributors" id="author">By: {{ author }}</p>
                 <p class="record-description" id="description">{{ description }}</p>
                 <div class="buttons">
-                    <!-- Create a traditional HTML form -->
                     <form id="add_to_read_later_form_{{ isbn }}" method="POST">
-                        <!-- Hidden input fields to hold the book data mainly the ISBN -->
                         <input type="hidden" name="book_isbn" value="{{ isbn }}">
-                        <!-- Add a custom attribute to identify the form -->
-                        <button type="submit" class="btn btn-primary" data-form-id="{{ isbn }}">Add to Read Later</button>
+                        <button type="submit" class="btn btn-primary" data-form-id="{{ isbn }}" style="margin-right: 10px;">Add to Read Later</button>
                     </form>
-                    <button type="button" class="btn btn-success" id="view_info">View Info.</button>
+                    <a class="btn btn-success" href="{{url_for('get_book_api', isbn_value=isbn)}}" role="button" id="view_info">View Info</a>
                 </div>
             </div>
         </div>
@@ -126,8 +123,13 @@
                     type: "POST",
                     data: form.serialize(),
                     success: function (response) {
-                        if(response.isLoggedIn){
-                            console.log(response.success)
+                        if (response.isLoggedIn) {
+                            if(response.Success == false){
+                                alert("Already in your read later list...")
+                            }
+                            else{
+                                alert("Added to your read later list")
+                            }
                         }
                         else{
                             window.location.href = "{{url_for('login_page')}}";

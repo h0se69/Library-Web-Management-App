@@ -7,7 +7,7 @@
         <div class="col-lg-8 order-lg-2">
             <div class="tab-content py-4">
                 <div class="tab-pane active" id="profile">
-                    <h2 class="mb-3">Your Profile</h2>
+                    <h1 class="mb-3 text-center" style="padding-left: 50%;">Your Profile</h1>
                     <div class="row">
                         <div class="col-md-6">
                             <p>ID: {{userInformation.user_id}}</p>
@@ -33,9 +33,9 @@
                                 </form>
 
                         </div>
-                        <div class="col-md-12">
-                            <h4 class="mt-2"><span class="fa fa-clock-o ion-clock float-right">Recent Activity</h4>
-                            <table class="table table-sm table-hover table-striped">
+                        <div class="col-lg-12 order-lg-1 text-center">
+                            <h1 class="mt-2 text-center"><span class="fa fa-clock-o ion-clock float-right" style="padding-left: 50%;">Recent Activity</h1>
+                            <table class="table table-sm table-hover table-striped" style="width: 100%;">
                                 <tbody>                                    
                                     {% for x in range(10) %}
                                         <tr>
@@ -53,14 +53,15 @@
                 
             </div>
         </div>
-        <div class="col-lg-4 order-lg-1 text-center">
-            <h3>Read Later</h3>
-            <table border="1">
+        <div class="col-lg-12 order-lg-1 text-center">
+            <h1 class="mt-2 text-center">Read Later</h1>
+            <table border="1" id="read_later_table">
                 <thead>
                     <tr>
                         <th>ISBN</th>
                         <th>Title</th>
                         <th>Date Added</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <style>
@@ -91,10 +92,21 @@
                 
                 <tbody>
                     {% for book in read_later_list %}
-                    <tr>
-                        <td class="truncate">{{ book['ISBN'] }}</td>
+                    {% set book_isbn = book['ISBN']%}
+                    <tr id="table_row_{{book_isbn}}">
+                        <td class="truncate">
+                            <a href="{{url_for('get_book_api', isbn_value=book_isbn)}}" id="{{book_isbn}}">
+                                {{ book_isbn }}
+                            </a>
+                        </td>
                         <td class="truncate">{{ book['name'] }}</td>
                         <td class="truncate">{{ book['date_added'] }}</td>
+                        <td class="truncate text-center">
+                            <form id="remove_read_later_{{ book_isbn }}" method="POST">
+                                <input type="hidden" name="book_isbn" value="{{ book_isbn }}">
+                                <button type="submit" class="btn btn-danger" data-form-id="{{ book_isbn }}" style="margin-right: 10px;">Remove</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -102,6 +114,31 @@
             </table> 
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            $("form[id^='remove_read_later_']").on("submit", function (event) {
+                event.preventDefault();
+                var form = $(this);
+                var rowId = form.attr('id').replace("remove_read_later_","")
+                $.ajax({
+                    url: "{{url_for('remove_read_later_api')}}",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (response) {
+                       if(response.REMOVE_RESPONSE === true){ 
+                            $(`table#read_later_table tr#table_row_${rowId}`).remove();
+                        }
+                        else{
+                            alert("Unable to remove, try refreshing the page")
+                        }
+                    },
+                    error: function (error) {
+                        console.log("read later ajax error:", error);
+                    }
+                });
+            });
+        });
+    </script>
 </div>
 
 {% endblock %}
