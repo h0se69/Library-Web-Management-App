@@ -200,29 +200,34 @@ class Books():
         else:    
             if book_name:
                 query += f" AND name LIKE = '%{book_name}%'"
+
             if author_names:
                 for author in author_names:
                     query += f" AND EXISTS (SELECT 1 FROM Book_Authors WHERE Books.ISBN = Book_Authors.ISBN AND author = '{author}')"
                     # needs to be checked
                     # probably should be rewritten because efficiency
+
             if start_date and end_date:
                 query += f" AND (publish_date BETWEEN '{start_date}' AND '{end_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
             elif start_date:
                 query += f" AND (publish_date >= '{start_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
             elif end_date:
                 query += f" AND (publish_date <= '{end_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
-            if start_date and end_date:  
-                 query += f" AND (page_amt BETWEEN '{page_min}' AND '{page_max}'" + " OR page_amt IS NULL)" if include_nulls else ")"
+
+            if page_min and page_max:  
+                query += f" AND (page_amt BETWEEN '{page_min}' AND '{page_max}'" + " OR page_amt IS NULL)" if include_nulls else ")"
             elif page_min:
                 query += f" AND (page_amt >= {page_min}" + " OR page_amt IS NULL)" if include_nulls else ")"
             elif page_max:
                 query += f" AND (page_amt <= {page_max}" + " OR page_amt IS NULL)" if include_nulls else ")"
+
             if genres:
                 # query += f" AND EXISTS (SELECT 1 FROM Genres WHERE Books.ISBN = Genres.ISBN AND genre IN ({', '.join(['%s']*len(genres))}))" this is OR not AND
                 for genre in genres:
                     query += f" AND EXISTS (SELECT 1 FROM Book_Genres WHERE Books.ISBN = Book_Genres.ISBN AND genre = '{genre}')"
                 # needs to be checked
                 # probably should be rewritten because efficiency
+
             if book_type:
                 book_type = book_type.upper()
                 if book_type == 'PHYSICAL' or book_type == 'DIGITAL':
