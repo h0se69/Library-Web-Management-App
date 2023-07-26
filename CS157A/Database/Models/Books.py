@@ -15,7 +15,7 @@ class Books():
         query0 = """
         CREATE TABLE IF NOT EXISTS BOOKS(
             ISBN VARCHAR(20) PRIMARY KEY, 
-            name VARCHAR(255) NOT NULL,
+            name VARCHAR(500) NOT NULL,
             description VARCHAR(4096),          -- for now can be null
             publish_date DATE,                  -- for now can be null
             page_amt INTEGER,                   -- for now can be null
@@ -61,6 +61,7 @@ class Books():
     # watch the argument order when adding
     # needed to move descrip/date to end due to default value None
     def add_book(self, isbn:str, name:str, book_type:str, description: str=None, publish_date:str=None, page_amount:int=None, image:str=None):
+        name = name[0:499]
         try:
             query = f"""
                 INSERT INTO BOOKS (ISBN, name, description, publish_date, type, page_amt, image)

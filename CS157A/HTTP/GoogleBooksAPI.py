@@ -30,12 +30,14 @@ async def request_books(search_value:str):
             parsedData = parse_book_data(json_response=json_response)
             return {
                 "RESPONSE_CODE": 200,
-                "DATA": parsedData
+                "DATA": parsedData,
+                "BOOKS_ADDED": len(parsedData)
             }
         else:
             return {
                 "RESPONSE_CODE": 302,
-                "DATA": "INVALID_JSON_RESPONSE"
+                "DATA": "INVALID_JSON_RESPONSE",
+                "BOOKS_ADDED": 0
             }
 
 

@@ -24,6 +24,9 @@ def get_user_first_name():
 def get_user_id():
     return session.get('user_id')
 
+def get_admin_status():
+    return session.get('isAdmin')
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -38,9 +41,26 @@ def login_required(f):
 
     return decorated_function
 
+def admin_access_only(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        g.authenticated = is_logged_in()
+        g.admin = get_admin_status()
+        if g.authenticated and g.admin:
+            g.user_email = get_user_email()
+            g.user_first_name = get_user_first_name()
+            g.user_id = get_user_id()
+            return f(*args, **kwargs)
+        else:
+            return "You need admin access to view this page...."
+
+    return decorated_function
+
+
 @flask_obj.before_request
 def before_request():
     g.authenticated = is_logged_in()
+    g.admin = get_admin_status()
     if g.authenticated:
         g.user_email = get_user_email()
         g.user_first_name = get_user_first_name()
@@ -65,6 +85,7 @@ def register_page():
             first_name=first_name,
             last_name=last_name,
             password=password,
+            isAdmin=False
         )
         if(register_response == True):
             return redirect(url_for('login_page'))
@@ -86,7 +107,8 @@ def login_page():
             first_name = loginResponse[0]
             email = loginResponse[1]
             user_id = loginResponse[2]
-            set_user_session(email=email, first_name=first_name, user_id=user_id)
+            isAdmin = loginResponse[3]
+            set_user_session(email=email, first_name=first_name, user_id=user_id, isAdmin=isAdmin)
             return redirect(url_for('home_page'))
 
     return render_template('LoginPage.html')
@@ -128,13 +150,24 @@ def user_profile_page():
         return "Go back and retry... [NO_USER_INFORMATION_LOADED | TRY_CLEARING_COOKIES]"
     return render_template('UserProfile.html', userInformation=userInformation, read_later_list=read_later_list)
 
-@flask_obj.route('/add-books/<string:search_input>', methods=["GET", "POST"])
-@login_required
-def request_google_books_api(search_input:str):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response = loop.run_until_complete(request_books(search_input))
-    return response
+@flask_obj.route('/add-books', methods=["GET", "POST"])
+@flask_obj.route('/add-books/<string:search_input>', methods=["POST"])
+@admin_access_only
+def request_google_books_api(search_input=None):
+    if request.method == "POST":
+        search_input = request.form.get('search_input')
+        print(f"search_input: {search_input}")
+        if search_input:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            response = loop.run_until_complete(request_books(search_input))
+            flash(f"STATUS: ADDED {response.get('BOOKS_ADDED')} BOOKS")
+        else:
+            flash("Please provide a valid search input.")
+        return redirect(url_for('request_google_books_api'))
+    
+    return render_template('AddBook.html')
+
 
 @flask_obj.route('/add-to-read-later', methods=["POST"])
 @login_required

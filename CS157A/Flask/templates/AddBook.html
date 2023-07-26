@@ -1,0 +1,31 @@
+{% extends "Navbar.html" %}
+
+{% block content %}
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <p style="width: 100%; margin: 45px;">Books will be added based on name | custom additions soon...</p>
+
+    <form class="d-flex" role="search" action="" method="POST" style="width: 100%; margin: 45px;" onsubmit="updateAction()">
+        <input class="form-control me-2" type="search" placeholder="Add Book from GOOGLE API" aria-label="Search" name="search_input" id="search_input">
+        <button class="btn btn-primary" type="submit">ADD BOOKS</button>
+    </form>
+    <script>
+        function updateAction() {
+            const searchInput = document.getElementById("search_input").value;
+
+            console.log(searchInput)
+            const form = document.querySelector('form');
+            form.action = `/add-books/${encodeURIComponent(searchInput)}`;
+        }
+    </script>
+</div>
+
+{% endblock %}

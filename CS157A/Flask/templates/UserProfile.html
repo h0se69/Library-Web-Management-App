@@ -7,7 +7,9 @@
         <div class="col-lg-8 order-lg-2">
             <div class="tab-content py-4">
                 <div class="tab-pane active" id="profile">
-                    <h1 class="mb-3 text-center" style="padding-left: 50%;">Your Profile</h1>
+                    <h1 class="mb-3 text-center">
+                        Your Profile {% if g.admin %} [ADMIN] {% else %} [User] {% endif %}
+                    </h1>
                     <div class="row">
                         <div class="col-md-6">
                             <p>ID: {{userInformation.user_id}}</p>
@@ -34,7 +36,7 @@
 
                         </div>
                         <div class="col-lg-12 order-lg-1 text-center">
-                            <h1 class="mt-2 text-center"><span class="fa fa-clock-o ion-clock float-right" style="padding-left: 50%;">Recent Activity</h1>
+                            <h1 class="mt-2 text-center"><span class="fa fa-clock-o ion-clock float-right">Recent Activity</h1>
                             <table class="table table-sm table-hover table-striped" style="width: 100%;">
                                 <tbody>                                    
                                     {% for x in range(10) %}
@@ -53,11 +55,11 @@
                 
             </div>
         </div>
-        <div class="col-lg-12 order-lg-1 text-center">
-            <h1 class="mt-2 text-center">Read Later</h1>
+        <div class="col-lg-12 order-lg-1">
+            <h1 class="mt-2">Read Later</h1>
             <table border="1" id="read_later_table">
                 <thead>
-                    <tr>
+                    <tr align="center">
                         <th>ISBN</th>
                         <th>Title</th>
                         <th>Date Added</th>
