@@ -181,6 +181,24 @@ class Books():
 
         return dict_response
 
+
+    def get_recommended_books(self, title:str, current_isbn:str):
+        title = title.split(" ")[0]
+        query = f"""
+            SELECT *
+            FROM BOOKS B
+            WHERE B.name LIKE %s AND B.ISBN != %s
+            ORDER BY RAND() 
+            LIMIT 3
+        """
+        mycursor.execute(query, (f"%{title}%", current_isbn))
+        response = mycursor.fetchall()
+        columns = [col[0] for col in mycursor.description]
+        dict_response = [dict(zip(columns, row)) for row in response]
+
+        return dict_response
+
+
     # Limited to 100 results
     # By default returns all books
     # WARNING: This uses AND for everything (not OR)

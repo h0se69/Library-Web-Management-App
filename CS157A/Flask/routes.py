@@ -6,8 +6,8 @@ from CS157A.Database.Models.Users import Users
 from CS157A.Flask.Sessions import set_user_session
 from CS157A.HTTP.GoogleBooksAPI import request_books
 from CS157A.Database.Models.Books import Books
+from CS157A.Database.Models.UserActivity import UserActivity
 import asyncio
-
 
 flask_obj.secret_key = 'test-key'
 
@@ -66,11 +66,13 @@ def before_request():
         g.user_first_name = get_user_first_name()
         g.user_id = get_user_id()
 
-# # #
-
 @flask_obj.route('/', methods=["GET"])
 def home_page():
     return render_template('HomePage.html')
+
+#
+# ____________________Account/Session Managements_________________________
+#
 
 @flask_obj.route('/register', methods=["GET", "POST"])
 def register_page():
@@ -109,6 +111,7 @@ def login_page():
             user_id = loginResponse[2]
             isAdmin = loginResponse[3]
             set_user_session(email=email, first_name=first_name, user_id=user_id, isAdmin=isAdmin)
+            UserActivity().add_activity(user_id=user_id, activity_type="LOGIN", activity_msg="LOGGED INTO YOUR ACCOUNT")
             return redirect(url_for('home_page'))
 
     return render_template('LoginPage.html')
@@ -116,22 +119,39 @@ def login_page():
 @flask_obj.route("/logout", methods=['GET'])
 @login_required
 def logout():
+    UserActivity().add_activity(user_id=g.user_id, activity_type="LOG OUT", activity_msg="LOGGED OUT OF YOUR ACCOUNT")
     session.clear()
     return redirect(url_for('home_page'))
 
-@flask_obj.route('/search-by-category', methods=["GET"])
-def search_by_category_page():
-    categories = Books().get_all_book_genres()
-    return render_template('SearchByCategory.html', categories=categories)
+@flask_obj.route('/user-profile', methods=["GET"])
+@login_required
+def user_profile_page():
+    userInformation = Users().get_user_information(user_id=g.user_id, email=g.user_email)
+    read_later_list = BookLists().get_user_read_later(user_id=g.user_id)
+    activity_list = UserActivity().get_all_activities(user_id=g.user_id)
 
+    if(userInformation is None):
+        return "Go back and retry... [NO_USER_INFORMATION_LOADED | TRY_CLEARING_COOKIES]"
+    return render_template('UserProfile.html', userInformation=userInformation, read_later_list=read_later_list, activity_list=activity_list)
+
+
+# ________________Database Calls/API_________________________
+
+# 
+# Search/Selects
+# 
+
+#  ________________NAVBAR ITEM________________
 @flask_obj.route('/best-sellers', methods=["GET"])
 def best_sellers_page():
     return render_template('BestSellers.html')
 
+#  ________________NAVBAR ITEM________________
 @flask_obj.route('/advanced-search', methods=["GET"])
 def advanced_search_page():
     return render_template('AdvancedSearch.html')
 
+#  ________________NAVBAR ITEM________________
 @flask_obj.route('/all-books', methods=["GET"])
 def all_books_page():
     response = Books().get_all_books()
@@ -139,49 +159,13 @@ def all_books_page():
     book_count = response[1]
     return render_template("ViewBooks.html", books=book_list, book_count=book_count)
 
-@flask_obj.route('/user-profile', methods=["GET"])
-@login_required
-def user_profile_page():
-    userInformation = Users().get_user_information(user_id=g.user_id, email=g.user_email)
+#  ________________NAVBAR ITEM________________
+@flask_obj.route('/search-by-category', methods=["GET"])
+def search_by_category_page():
+    categories = Books().get_all_book_genres()
+    return render_template('SearchByCategory.html', categories=categories)
 
-    read_later_list = BookLists().get_user_read_later(user_id=g.user_id)
-
-    if(userInformation is None):
-        return "Go back and retry... [NO_USER_INFORMATION_LOADED | TRY_CLEARING_COOKIES]"
-    return render_template('UserProfile.html', userInformation=userInformation, read_later_list=read_later_list)
-
-@flask_obj.route('/add-books', methods=["GET", "POST"])
-@flask_obj.route('/add-books/<string:search_input>', methods=["POST"])
-@admin_access_only
-def request_google_books_api(search_input=None):
-    if request.method == "POST":
-        search_input = request.form.get('search_input')
-        print(f"search_input: {search_input}")
-        if search_input:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            response = loop.run_until_complete(request_books(search_input))
-            flash(f"STATUS: ADDED {response.get('BOOKS_ADDED')} BOOKS")
-        else:
-            flash("Please provide a valid search input.")
-        return redirect(url_for('request_google_books_api'))
-    
-    return render_template('AddBook.html')
-
-
-@flask_obj.route('/add-to-read-later', methods=["POST"])
-@login_required
-def add_to_read_later_api():
-    if(request.method == "POST"):
-        user_id = g.user_id
-        book_isbn = request.form.get('book_isbn')
-        response = BookLists().add_to_read_later(user_id=user_id, book_isbn=book_isbn)
-        if(response):
-            return jsonify({"Success": True, "isLoggedIn": is_logged_in()})
-        else:
-            return jsonify({"Success": False, "isLoggedIn": is_logged_in()})
-
-
+#  ________________NAVBAR ITEM________________ (Search Bar)
 @flask_obj.route('/search-books', methods=["POST"])
 @flask_obj.route('/search-books/<string:search_input>', methods=["POST"])
 def search_books_api(search_input=None):
@@ -202,17 +186,63 @@ def get_book_api(isbn_value=None):
     isbn_value = request.args.get('isbn_value')
     if(isbn_value):
         book_data_response = Books().get_specific_book(isbn=isbn_value)
+        try:
+            book_data_response_title = book_data_response[0]['name']
+        except:
+            book_data_response_title = "Random Book"
+        recommended_books = Books().get_recommended_books(title=book_data_response_title, current_isbn=isbn_value)
     else:
         book_data_response = "GO_BACK_AND_TRY_AGAIN"
+        recommended_books = "GO_BACK_AND_TRY_AGAIN"
 
-    return render_template("SpecificBook.html", book_data=book_data_response)
+    return render_template("SpecificBook.html", book_data=book_data_response, recommendations=recommended_books)
+
+# 
+# Add/Inserts
+# 
+
+@flask_obj.route('/add-books', methods=["GET", "POST"])
+@flask_obj.route('/add-books/<string:search_input>', methods=["POST"])
+@admin_access_only
+def request_google_books_api(search_input=None):
+    if request.method == "POST":
+        search_input = request.form.get('search_input')
+        if search_input:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            response = loop.run_until_complete(request_books(search_input))
+            flash(f"STATUS: ADDED {response.get('BOOKS_ADDED')} BOOKS")
+            UserActivity().add_activity(user_id=g.user_id, activity_type="ADDED BOOKS [ADMIN]", activity_msg=f"ADDED BOOKS|SEARCH INPUT: {search_input}")
+
+        else:
+            flash("Please provide a valid search input.")
+        return redirect(url_for('request_google_books_api'))
+    
+    return render_template('AddBook.html')
 
 
+@flask_obj.route('/add-to-read-later', methods=["POST"])
+@login_required
+def add_to_read_later_api():
+    if(request.method == "POST"):
+        user_id = g.user_id
+        book_isbn = request.form.get('book_isbn')
+        response = BookLists().add_to_read_later(user_id=user_id, book_isbn=book_isbn)
+        if(response):
+            UserActivity().add_activity(user_id=g.user_id, activity_type="READ LATER", activity_msg=f"ADDED BOOK: {book_isbn}")
+            return jsonify({"Success": True, "isLoggedIn": is_logged_in()})
+        else:
+            return jsonify({"Success": False, "isLoggedIn": is_logged_in()})
+        
+# 
+# Remove/Delete
+# 
 @flask_obj.route("/remove-read-later-book", methods=["POST"])
 def remove_read_later_api():
     if(request.method == "POST"):
         book_isbn = request.form.get('book_isbn')
         remove_response = BookLists().remove_from_read_later(user_id=g.user_id, isbn=book_isbn)
+        UserActivity().add_activity(user_id=g.user_id, activity_type="READ LATER", activity_msg=f"REMOVED BOOK: {book_isbn}")
         return jsonify({
             "REMOVE_RESPONSE": remove_response
         })

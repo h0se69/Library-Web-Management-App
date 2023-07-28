@@ -17,7 +17,8 @@
     <section style="background-color: #eee;">
         <div>
             <form>
-                <input type="button" class="btn btn-outline-primary" data-mdb-ripple-color="dark" value="Go back." onclick="history.go(-1)">
+                <input type="button" class="btn btn-outline-primary" data-mdb-ripple-color="dark" value="Go back."
+                    onclick="history.go(-1)">
             </form>
         </div>
         <div class="container py-5">
@@ -103,7 +104,19 @@
                                 </div>
                                 <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
                                     <h6 class="text">Genre(s)</h6>
-                                    <ul class="text">{{book_genre}}</ul>
+                                    <ul class="text">
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ url_for('search_books_api', genre=book_genre) }}"
+                                                id="{{ book_genre }}">
+                                                <button type="submit" class="btn btn-link"
+                                                    style="border: none; padding: 0; background: none;">
+                                                    {{ book_genre }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-xl-12 mt-4">
                                     <h3>Summary</h3>
@@ -117,6 +130,50 @@
             </div>
         </div>
     </section>
+    <section style="background-color: #eee;" id="detail_section">
+        <div class="container py-5" style="margin-top: -80px;">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-12 col-xl-10">
+                    <div class="card shadow-0 border rounded-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <h3>Recommended Books</h3>
+                                {% for recommendation in recommendations %}
+                                    {% set recommendation_image = recommendation['image'] %}
+                                    {% set recommendation_title = recommendation['name'] %}
+                                    {% set recommendation_description = recommendation['description'] %}
+                                    {% set isbn_value = recommendation['ISBN'] %}
+
+                                    <div class="col-md-4"><!-- Use col-md-4 or any appropriate class -->
+                                        <div class="card" style="width: 18rem; overflow: hidden;">
+                                            <img class="card-img-top" src="{{recommendation_image}}" alt="{{recommendation_title}} book image">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{recommendation_title}}</h5>
+                                                <p class="card-text" style="overflow: auto; line-height: 1.5em; max-height: 7em;">{{recommendation_description}}</p>
+                                                <div class="row buttons">
+                                                    <div class="col">
+                                                        <form id="add_to_read_later_form_{{ isbn_value }}" method="POST">
+                                                            <input type="hidden" name="book_isbn" value="{{ isbn_value }}">
+                                                            <button type="submit" class="btn btn-primary" data-form-id="{{ isbn_value }}" style="margin-right: 10px;">Add to Read Later</button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="col">
+                                                        <a class="btn btn-success" href="{{url_for('get_book_api', isbn_value=isbn_value)}}" role="button" id="view_info">View Info</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <script>
         $(document).ready(function () {
             $("form[id^='add_to_read_later_form_']").on("submit", function (event) {
@@ -128,10 +185,10 @@
                     data: form.serialize(),
                     success: function (response) {
                         if (response.isLoggedIn) {
-                            if(response.Success == false){
+                            if (response.Success == false) {
                                 alert("Already in your read later list...")
                             }
-                            else{
+                            else {
                                 alert("Added to your read later list")
                             }
                         }

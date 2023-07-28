@@ -38,11 +38,28 @@
                         <div class="col-lg-12 order-lg-1 text-center">
                             <h1 class="mt-2 text-center"><span class="fa fa-clock-o ion-clock float-right">Recent Activity</h1>
                             <table class="table table-sm table-hover table-striped" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Activity Type</th>
+                                        <th>Message</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
                                 <tbody>                                    
-                                    {% for x in range(10) %}
+                                    {% for activity in activity_list %}
+                                        {% set activity_type = activity['activity_type']%}
+                                        {% set activity_msg = activity['activity_msg']%}
+                                        {% set activity_timestamp = activity['activity_timestamp']%}
+
                                         <tr>
                                             <td>
-                                                <strong>[Checked-Out]</strong> Harry Potter The {{x}} Book</strong>
+                                                <strong>[{{activity_type}}]</strong>
+                                            </td>
+                                            <td>
+                                                {{ activity_msg }}
+                                            </td>
+                                            <td>
+                                                {{activity_timestamp}}
                                             </td>
                                         </tr>
                                     {% endfor %}
