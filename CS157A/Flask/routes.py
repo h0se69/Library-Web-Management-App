@@ -166,16 +166,52 @@ def search_by_category_page():
     return render_template('SearchByCategory.html', categories=categories)
 
 #  ________________NAVBAR ITEM________________ (Search Bar)
-@flask_obj.route('/search-books', methods=["POST"])
+@flask_obj.route('/search-books', methods=["POST","GET"])
 @flask_obj.route('/search-books/<string:search_input>', methods=["POST"])
 def search_books_api(search_input=None):
+
     genre = request.args.get('genre')
+
+    book_name = request.args.get('book_name')
+    authors = request.args.get('authors')
+    #authors = [author.strip() for author in authors.split(',')] if authors is not None else None
+    ISBN = request.args.get('ISBN')
+    genres = request.args.get('genres')
+    #genres = [genre.strip() for genre in genres.split(',')] if genres is not None else None
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    book_type = request.args.get('book_type')
+    page_min = request.args.get('page_min')
+    page_max = request.args.get('page_max')
+    include_unknown = request.args.get('include_unknown') == 'on'
+
     if(genre):
         response = Books().get_books_off_genre(genre=genre)
         book_list = response[0]
         book_count = response[1]
-    else:
+        # response = Books().get_books(book_name="1984",debug=True)
+        # book_list = response[0]
+        # book_count = response[1]
+
+    elif (search_input):
         response = Books().get_books_off_search(search_input)
+        book_list = response[0]
+        book_count = response[1]
+
+    else:
+        response = Books().get_books(
+            book_name=book_name,
+            author_names=authors.split(',') if authors else None,
+            ISBN=ISBN,
+            start_date=start_date,
+            end_date=end_date,
+            genres=genres.split(',') if genres else None,
+            book_type=book_type,
+            page_min=page_min,
+            page_max=page_max,
+            include_nulls=include_unknown,
+            debug=True #TODO remove when done with bugfixing
+        )
         book_list = response[0]
         book_count = response[1]
 

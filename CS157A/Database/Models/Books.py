@@ -210,55 +210,62 @@ class Books():
     # book_type should either be 'digital' or 'physical', otherwise ignored
     #
     # TODO NEEDS TESTING
-    def get_books(book_name=None, author_names=None, ISBN=None, start_date=None, end_date=None, page_min=None, page_max=None, genres=None, book_type=None, include_nulls =False, debug = False):
-        query = "SELECT * FROM Books WHERE 1=1"
+    def get_books(self, book_name=None, author_names=None, ISBN=None, start_date=None, end_date=None, page_min=None, page_max=None, genres=None, book_type=None, include_nulls =False, debug = False):
+        query = """SELECT DISTINCT * \nFROM Books \nWHERE 1=1\n"""
 
         if ISBN:
-            query += f" AND ISBN = '{ISBN}'"
+            query += f" AND ISBN = '{ISBN}'\n"
         else:    
             if book_name:
-                query += f" AND name LIKE = '%{book_name}%'"
+                query += f" AND name LIKE '%{book_name}%'\n"
 
             if author_names:
                 for author in author_names:
-                    query += f" AND EXISTS (SELECT 1 FROM Book_Authors WHERE Books.ISBN = Book_Authors.ISBN AND author = '{author}')"
+                    query += f" AND EXISTS (SELECT 1 FROM Book_Authors WHERE Books.ISBN = Book_Authors.ISBN AND author = '{author}')\n"
                     # needs to be checked
                     # probably should be rewritten because efficiency
 
             if start_date and end_date:
-                query += f" AND (publish_date BETWEEN '{start_date}' AND '{end_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
+                query += f" AND (publish_date BETWEEN '{start_date}' AND '{end_date}'" + " OR publish_date IS NULL)\n" if include_nulls else ")\n"
             elif start_date:
-                query += f" AND (publish_date >= '{start_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
+                query += f" AND (publish_date >= '{start_date}'" + " OR publish_date IS NULL)\n" if include_nulls else ")\n"
             elif end_date:
-                query += f" AND (publish_date <= '{end_date}'" + " OR publish_date IS NULL)" if include_nulls else ")"
+                query += f" AND (publish_date <= '{end_date}'" + " OR publish_date IS NULL)\n" if include_nulls else ")\n"
 
             if page_min and page_max:  
-                query += f" AND (page_amt BETWEEN '{page_min}' AND '{page_max}'" + " OR page_amt IS NULL)" if include_nulls else ")"
+                query += f" AND (page_amt BETWEEN '{page_min}' AND '{page_max}'" + " OR page_amt IS NULL)\n" if include_nulls else ")\n"
             elif page_min:
-                query += f" AND (page_amt >= {page_min}" + " OR page_amt IS NULL)" if include_nulls else ")"
+                query += f" AND (page_amt >= {page_min}" + " OR page_amt IS NULL)\n" if include_nulls else ")\n"
             elif page_max:
-                query += f" AND (page_amt <= {page_max}" + " OR page_amt IS NULL)" if include_nulls else ")"
+                query += f" AND (page_amt <= {page_max}" + " OR page_amt IS NULL)\n" if include_nulls else ")\n"
 
             if genres:
                 # query += f" AND EXISTS (SELECT 1 FROM Genres WHERE Books.ISBN = Genres.ISBN AND genre IN ({', '.join(['%s']*len(genres))}))" this is OR not AND
                 for genre in genres:
-                    query += f" AND EXISTS (SELECT 1 FROM Book_Genres WHERE Books.ISBN = Book_Genres.ISBN AND genre = '{genre}')"
-                # needs to be checked
+                    query += f" AND EXISTS (SELECT 1 FROM Book_Genres WHERE Books.ISBN = Book_Genres.ISBN AND genre = '{genre}')\n"
                 # probably should be rewritten because efficiency
 
             if book_type:
                 book_type = book_type.upper()
                 if book_type == 'PHYSICAL' or book_type == 'DIGITAL':
-                    query += f" AND b.type = '{book_type}'"
+                    query += f" AND b.type = '{book_type}' \n"
 
         query+=" LIMIT 100"
 
+        if debug == True:
+            print()
+            print(query)
+            print()
+
         mycursor.execute(query)   
-        result = mycursor.fetchall()
+        response = mycursor.fetchall()
 
         if debug == True:
-            print(query)
-            print(result)
+            print(response)
 
+        columns = [column[0] for column in mycursor.description]
+        response_dict = [dict(zip(columns, row)) for row in response]
 
-        return result
+        book_count = len(response)
+        return response_dict, book_count
+    

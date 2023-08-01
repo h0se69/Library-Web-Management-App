@@ -1,6 +1,7 @@
 {% extends "NavBar.html" %}
 
 {% block content %}
+
 <head>
     <title>Book Search</title>
     <style>
@@ -66,63 +67,67 @@
             width: 80px;
         }
 
-	h1 {
+        h1 {
             font-size: 75px;
             margin-bottom: 10px;
             margin-top: 10px;
         }
-
     </style>
 </head>
+
 <body>
-    <center><h1>Book Search</h1></center>
-    <div class="form-container">
-        <div class="left-column">
-            <label for="book_name">Book Name:</label>
-            <input type="text" id="book_name" name="book_name">
+    <center>
+        <h1>Book Search</h1>
+    </center>
+    <form action="/search-books" method="get">
+        <div class="form-container">
+            <div class="left-column">
+                <label for="book_name">Book Name:</label>
+                <input type="text" id="book_name" name="book_name">
 
-            <label for="authors">Authors (comma-separated):</label>
-            <input type="text" id="authors" name="authors">
+                <label for="authors">Authors (comma-separated):</label>
+                <input type="text" id="authors" name="authors">
 
-            <label for="ISBN">ISBN:</label>
-            <input type="text" id="ISBN" name="ISBN">
+                <label for="ISBN">ISBN:</label>
+                <input type="text" id="ISBN" name="ISBN">
 
-            <label for="genres">Genres (comma-separated):</label>
-            <input type="text" id="genres" name="genres">
+                <label for="genres">Genres (comma-separated):</label>
+                <input type="text" id="genres" name="genres">
+            </div>
+
+            <div class="right-column">
+                <div class="date-container">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date">
+
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date">
+                </div>
+
+                <label for="book_type">Book Type:</label>
+                <select id="book_type" name="book_type">
+                    <option value="ANY" selected>Any</option>
+                    <option value="DIGITAL">Digital</option>
+                    <option value="PHYSICAL">Physical</option>
+                </select>
+
+                <div class="page-range-container">
+                    <label for="page_min">Page Min:</label>
+                    <input type="number" id="page_min" name="page_min" pattern="[0-9]*" min="0">
+
+                    <label for="page_max">Page Max:</label>
+                    <input type="number" id="page_max" name="page_max" pattern="[0-9]*" min="0">
+                </div>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="include_unknown" name="include_unknown">
+                    <label for="include_unknown">Include Books With Unknown Data</label>
+                </div>
+            </div>
         </div>
-
-        <div class="right-column">
-            <div class="date-container">
-                <label for="start_date">Start Date:</label>
-                <input type="date" id="start_date" name="start_date">
-
-                <label for="end_date">End Date:</label>
-                <input type="date" id="end_date" name="end_date">
-            </div>
-
-            <label for="book_type">Book Type:</label>
-            <select id="book_type" name="book_type">
-                <option value="ANY" selected>Any</option>
-                <option value="DIGITAL">Digital</option>
-                <option value="PHYSICAL">Physical</option>
-            </select>
-
-            <div class="page-range-container">
-                <label for="page_min">Page Min:</label>
-                <input type="number" id="page_min" name="page_min" pattern="[0-9]*" min="0">
-
-                <label for="page_max">Page Max:</label>
-                <input type="number" id="page_max" name="page_max" pattern="[0-9]*" min="0">
-            </div>
-
-            <div class="checkbox-container">
-                <input type="checkbox" id="include_unknown" name="include_unknown">
-                <label for="include_unknown">Include Books With Unknown Data</label>
-            </div>
+        <div class="form-container">
+            <input type="submit" value="Submit">
         </div>
-    </div>
-    <div class="form-container">
-        <input type="submit" value="Submit">
-    </div>
+    </form>
 </body>
 {% endblock %}
