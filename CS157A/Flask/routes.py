@@ -1,5 +1,6 @@
 from functools import wraps
 from CS157A.Database.Models.BookList import BookLists
+from CS157A.Database.Models.Ratings import BookRatings
 from CS157A.Flask import flask_obj
 from flask import render_template, request, flash, redirect, url_for, session, g, jsonify
 from CS157A.Database.Models.Users import Users
@@ -231,7 +232,14 @@ def get_book_api(isbn_value=None):
         book_data_response = "GO_BACK_AND_TRY_AGAIN"
         recommended_books = "GO_BACK_AND_TRY_AGAIN"
 
-    return render_template("SpecificBook.html", book_data=book_data_response, recommendations=recommended_books)
+    user_id = get_user_id()
+
+    total_reviews, user_rating = BookRatings().get_specific_book_ratings_count(book_isbn=isbn_value, user_id=user_id)
+    user_rating = int(user_rating)
+
+    return render_template("SpecificBook.html", book_data=book_data_response, recommendations=recommended_books, total_reviews=total_reviews, user_rating=user_rating)
+
+
 
 # 
 # Add/Inserts
@@ -269,8 +277,21 @@ def add_to_read_later_api():
             return jsonify({"Success": True, "isLoggedIn": is_logged_in()})
         else:
             return jsonify({"Success": False, "isLoggedIn": is_logged_in()})
-        
-# 
+
+@flask_obj.route('/add-book-rating', methods=["POST"])
+@login_required
+def add_book_rating_api():
+    if(request.method == "POST"):
+        user_id = g.user_id
+        book_isbn = request.form.get('book_isbn')
+        rating_value = request.form.get('rating_value')
+        BookRatings().add_rating(user_id=user_id, book_isbn=book_isbn, rating_value=rating_value)
+        print(user_id)
+        print(book_isbn)
+        print(rating_value)
+    return jsonify({"Success": "ADDED RATING"})
+
+#   
 # Remove/Delete
 # 
 @flask_obj.route("/remove-read-later-book", methods=["POST"])

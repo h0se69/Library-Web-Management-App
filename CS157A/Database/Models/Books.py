@@ -248,7 +248,8 @@ class Books():
             if book_type:
                 book_type = book_type.upper()
                 if book_type == 'PHYSICAL' or book_type == 'DIGITAL':
-                    query += f" AND b.type = '{book_type}' \n"
+                    # query += f" AND b.type = '{book_type}' \n"
+                    query += f" AND Books.type = '{book_type}' \n" #Changes from b.type to Books.type
 
         query+=" LIMIT 100"
 

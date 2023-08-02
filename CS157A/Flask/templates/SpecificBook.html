@@ -45,13 +45,54 @@
                                     </div>
                                     <div class="mt-1 mb-0 text-muted small">
                                         <span>Rating: </span>
-                                        <i class="text-danger">1</i>
-                                        <i class="text-danger">2</i>
-                                        <i class="text-danger">3</i>
-                                        <i class="text-danger">4</i>
-                                        <i class="text-danger">5</i>
-                                        <i class="text-primary">Total Reviews(idk if we will use stars or a num
-                                            system)</i>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn" data-value="1" id="star_1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                    </path>
+                                                </svg>
+                                                <span class="visually-hidden">Star 1</span>
+                                            </button>
+                                            <button type="button" class="btn" data-value="2" id="star_2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                    </path>
+                                                </svg>
+                                                <span class="visually-hidden">Star 2</span>
+                                            </button>
+                                            <button type="button" class="btn" data-value="3" id="star_3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                    </path>
+                                                </svg>
+                                                <span class="visually-hidden">Star 3</span>
+                                            </button>
+                                            <button type="button" class="btn" data-value="4" id="star_4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                    </path>
+                                                </svg>
+                                                <span class="visually-hidden">Star 4</span>
+                                            </button>
+                                            <button type="button" class="btn" data-value="5" id="star_5">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                    </path>
+                                                </svg>
+                                                <span class="visually-hidden">Star 5</span>
+                                            </button>
+                                        </div>
+                                        <i class="text-primary">Total Reviews: {{total_reviews}}</i>
                                     </div>
                                     <p class="text-truncate mb-4 mb-md-0">
                                         {{book_description}}
@@ -139,32 +180,39 @@
                             <div class="row">
                                 <h3>Recommended Books</h3>
                                 {% for recommendation in recommendations %}
-                                    {% set recommendation_image = recommendation['image'] %}
-                                    {% set recommendation_title = recommendation['name'] %}
-                                    {% set recommendation_description = recommendation['description'] %}
-                                    {% set isbn_value = recommendation['ISBN'] %}
+                                {% set recommendation_image = recommendation['image'] %}
+                                {% set recommendation_title = recommendation['name'] %}
+                                {% set recommendation_description = recommendation['description'] %}
+                                {% set isbn_value = recommendation['ISBN'] %}
 
-                                    <div class="col-md-4"><!-- Use col-md-4 or any appropriate class -->
-                                        <div class="card" style="width: 18rem; overflow: hidden;">
-                                            <img class="card-img-top" src="{{recommendation_image}}" alt="{{recommendation_title}} book image">
-                                            <div class="card-body">
-                                                <h5 class="card-title">{{recommendation_title}}</h5>
-                                                <p class="card-text" style="overflow: auto; line-height: 1.5em; max-height: 7em;">{{recommendation_description}}</p>
-                                                <div class="row buttons">
-                                                    <div class="col">
-                                                        <form id="add_to_read_later_form_{{ isbn_value }}" method="POST">
-                                                            <input type="hidden" name="book_isbn" value="{{ isbn_value }}">
-                                                            <button type="submit" class="btn btn-primary" data-form-id="{{ isbn_value }}" style="margin-right: 10px;">Add to Read Later</button>
-                                                        </form>
-                                                    </div>
-                                                    <div class="col">
-                                                        <a class="btn btn-success" href="{{url_for('get_book_api', isbn_value=isbn_value)}}" role="button" id="view_info">View Info</a>
-                                                    </div>
+                                <div class="col-md-4"><!-- Use col-md-4 or any appropriate class -->
+                                    <div class="card" style="width: 18rem; overflow: hidden;">
+                                        <img class="card-img-top" src="{{recommendation_image}}"
+                                            alt="{{recommendation_title}} book image">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{recommendation_title}}</h5>
+                                            <p class="card-text"
+                                                style="overflow: auto; line-height: 1.5em; max-height: 7em;">
+                                                {{recommendation_description}}</p>
+                                            <div class="row buttons">
+                                                <div class="col">
+                                                    <form id="add_to_read_later_form_{{ isbn_value }}" method="POST">
+                                                        <input type="hidden" name="book_isbn" value="{{ isbn_value }}">
+                                                        <button type="submit" class="btn btn-primary"
+                                                            data-form-id="{{ isbn_value }}"
+                                                            style="margin-right: 10px;">Add to Read Later</button>
+                                                    </form>
+                                                </div>
+                                                <div class="col">
+                                                    <a class="btn btn-success"
+                                                        href="{{url_for('get_book_api', isbn_value=isbn_value)}}"
+                                                        role="button" id="view_info">View Info</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                
+                                </div>
+
                                 {% endfor %}
                             </div>
                         </div>
@@ -173,6 +221,99 @@
             </div>
         </div>
     </section>
+
+    <script>
+        if("{{user_rating}}" == 1){
+            var element = document.getElementById('star_1');
+            element.style.backgroundColor = 'red';
+        }
+        else if("{{user_rating}}" == 2){
+            var element = document.getElementById('star_1');
+            element.style.backgroundColor = 'red';
+            var element = document.getElementById('star_2');
+            element.style.backgroundColor = 'red';
+        }
+        else if("{{user_rating}}" == 3){
+            var element = document.getElementById('star_1');
+            element.style.backgroundColor = 'yellow';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-warning';
+
+            var element = document.getElementById('star_2');
+            element.style.backgroundColor = 'yellow';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-warning';
+
+            var element = document.getElementById('star_3');
+            element.style.backgroundColor = 'yellow';
+        }
+        else if("{{user_rating}}" == 4){
+            var element = document.getElementById('star_1');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_2');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_3');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-warning';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_4');
+            element.style.backgroundColor = 'green';
+        }
+        else if("{{user_rating}}" == 5){
+            var element = document.getElementById('star_1');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_2');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-danger';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_3');
+            element.style.backgroundColor = 'green';
+            element.classList.remove = 'btn-outline-warning';
+            element.classList.add = 'btn-outline-success';
+
+            var element = document.getElementById('star_4');
+            element.style.backgroundColor = 'green';
+
+            var element = document.getElementById('star_5');
+            element.style.backgroundColor = 'green';
+        }
+    </script>
+
+
+    <script>
+        $(document).ready(function() {
+            $("button[id^='star_']").on('click', function() {
+                const value = $(this).data('value');
+    
+                $.ajax({
+                    url: "{{url_for('add_book_rating_api')}}",
+                    type: 'POST',
+                    data: { 
+                        "rating_value": value,
+                        "book_isbn": "{{book_isbn}}"
+                    }, 
+                    success: function(response) {
+                        console.log(`add_book_rating_api response: ${response}`);
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.log(`add_book_rating_api error response: ${response}`);
+                    }
+                });
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function () {

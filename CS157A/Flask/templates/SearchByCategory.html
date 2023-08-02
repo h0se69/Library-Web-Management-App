@@ -2,13 +2,13 @@
 
 {% block content %}
 <div>
-    <h1>Search By Genre Page</h1>
+    <h1 style="text-align: center;">Genres</h1>
 
     <div class="container">
         <div class="row">
             
             {% for category in categories %}
-              <div class="col-md-2 mb-4">
+              <div class="col-md-2 mb-4 mx-auto" style="text-align: center;">
                 <form action="{{url_for('search_books_api', genre=category)}}" method="post">
                     <ul class="list-group">
                       <li class="list-group-item py-3" style="height: 100%; display: flex; align-items: center; justify-content: center;">
