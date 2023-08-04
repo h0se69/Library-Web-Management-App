@@ -172,17 +172,18 @@ class Checkout_Return():
 
 
     # Can either provide checkout_id, or 
-    # user_id, book_id, checkout_date 
+    # user_id, book_id (will assume most recent checkout of the book by the user)
     # 
     # will add default fine of 5.01$ with reason default reason late return
-    #TODO clarify about what to do with reasons, ENUM('LATE','DAMAGED') or str reason (currently is str reason)
-    def add_fee(self, checkout_id = None, user_id = None, book_id = None, checkout_date = None, amount = 5.01, reason_s = "late return",):
+    def add_fee(self, checkout_id = None, user_id = None, book_id = None, amount = 5.01, reason_s = "late return",):
         if not checkout_id:
             checkout_search = f"""SELECT checkout_id 
                 FROM LIBRARY_CHECKOUT 
-                WHERE user_id = %s AND book_id = %s AND checkout_date = %s
+                WHERE user_id = %s AND book_id = %s -- will assume most recent one
+                ORDER BY returned_date DESC, returned_date IS NULL -- if still checked out will grab that book
+                LIMIT 1
             """
-            mycursor.execute(checkout_search,(user_id,book_id,checkout_date))
+            mycursor.execute(checkout_search,(user_id,book_id))
             checkout_search_result = mycursor.fetchall()
             if len(checkout_search_result) != 0:
                 checkout_id = checkout_search_result[0][0] # get the first result of the first tuple

@@ -218,6 +218,29 @@ def search_books_api(search_input=None):
 
     return render_template("ViewBooks.html", books=book_list, book_count=book_count)
 
+@flask_obj.route('/librarian-view', methods=["GET"])
+@admin_access_only
+def librarian_view_page():
+    return render_template('LibrarianView.html')
+
+@flask_obj.route('/perform-view', methods=["POST"])
+@admin_access_only
+def return_book_api():
+    if(request.method == "POST"):
+        pass #TODO I will do these
+    
+@flask_obj.route('/add-fine', methods=["POST"])
+@admin_access_only
+def add_fine_api():
+    if(request.method == "POST"):
+        pass #TODO
+
+@flask_obj.route('/perform-checkout', methods=["POST"])
+@admin_access_only
+def checkout_book_api():
+    if(request.method == "POST"):
+        pass #TODO
+
 @flask_obj.route("/view-book", methods=["GET"])
 def get_book_api(isbn_value=None):
     isbn_value = request.args.get('isbn_value')
