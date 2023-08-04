@@ -102,34 +102,59 @@ class Books():
             print(f"duplicateBook_Error_add_book_genres: {duplicateBook}")
 
 
-    def get_all_books(self):
-        query = f"""
-            SELECT * 
-            FROM BOOKS
-            JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
-        """
-        mycursor.execute(query)
-        response = mycursor.fetchall()
-        book_count = len(response)
-        
-        columns = [column[0] for column in mycursor.description]
-        response_dict = [dict(zip(columns, row)) for row in response]
-        return response_dict, book_count # list response | book count
+    def get_all_books(self, pageNo:int):
+        offset = pageNo * 10
 
-    def get_books_off_search(self, search_value:str):
+        book_count_query  = f"""
+            SELECT COUNT(*) FROM BOOKS
+        """
+        mycursor.execute(book_count_query)
+        book_count = mycursor.fetchone()[0] 
+
         query = f"""
             SELECT *
             FROM BOOKS
             JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
-            WHERE name LIKE %s
+            LIMIT 10
+            OFFSET %s
         """
-        mycursor.execute(query, (f"%{search_value}%", ))
+        mycursor.execute(query, (offset, ))
+        book_response = mycursor.fetchall()
+
+
+
+        columns = [column[0] for column in mycursor.description]
+        response_dict = [dict(zip(columns, row)) for row in book_response]
+        return response_dict, book_count # list response | book count
+
+
+    def get_books_off_search(self, search_value:str, pageNo:int):
+        offset = pageNo * 10
+
+        book_count_query  = f"""
+            SELECT COUNT(*) 
+            FROM BOOKS
+            JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
+            WHERE name LIKE %s OR description LIKE %s
+        """
+        mycursor.execute(book_count_query, (f"%{search_value}%", f"%{search_value}%", ))
+        book_count = mycursor.fetchone()[0] 
+
+        query = f"""
+            SELECT *
+            FROM BOOKS
+            JOIN BOOK_AUTHORS ON BOOKS.ISBN = BOOK_AUTHORS.ISBN
+            WHERE name LIKE %s OR description LIKE %s
+            LIMIT 10
+            OFFSET %s
+        """
+        mycursor.execute(query, (f"%{search_value}%", f"%{search_value}%", offset, ))
 
         response = mycursor.fetchall()
         columns = [column[0] for column in mycursor.description]
         response_dict = [dict(zip(columns, row)) for row in response]
 
-        book_count = len(response)
+        
         return response_dict, book_count # list response | book count
     
     def get_books_off_genre(self, genre):
@@ -210,7 +235,8 @@ class Books():
     # book_type should either be 'digital' or 'physical', otherwise ignored
     #
     # TODO NEEDS TESTING
-    def get_books(self, book_name=None, author_names=None, ISBN=None, start_date=None, end_date=None, page_min=None, page_max=None, genres=None, book_type=None, include_nulls =False, debug = False):
+    def get_books(self, book_name=None, author_names=None, ISBN=None, start_date=None, end_date=None, page_min=None, page_max=None, genres=None, book_type=None, include_nulls =False, pageNo=0, debug = False):
+        offset = pageNo * 10
         query = """SELECT DISTINCT * \nFROM Books \nWHERE 1=1\n"""
 
         if ISBN:
@@ -251,14 +277,18 @@ class Books():
                     # query += f" AND b.type = '{book_type}' \n"
                     query += f" AND Books.type = '{book_type}' \n" #Changes from b.type to Books.type
 
-        query+=" LIMIT 100"
+        count_query = query.replace("SELECT DISTINCT *", "SELECT COUNT(*) ")
+        mycursor.execute(count_query)
+        book_count = mycursor.fetchone()[0]
+
+        query+= f"LIMIT 10 OFFSET {offset}"
 
         if debug == True:
             print()
             print(query)
             print()
 
-        mycursor.execute(query)   
+        mycursor.execute(query,)   
         response = mycursor.fetchall()
 
         if debug == True:
@@ -267,6 +297,5 @@ class Books():
         columns = [column[0] for column in mycursor.description]
         response_dict = [dict(zip(columns, row)) for row in response]
 
-        book_count = len(response)
         return response_dict, book_count
     

@@ -69,7 +69,7 @@ def before_request():
 
 @flask_obj.route('/', methods=["GET"])
 def home_page():
-    return render_template('HomePage.html')
+    return redirect(url_for('best_sellers_page'))
 
 #
 # ____________________Account/Session Managements_________________________
@@ -145,7 +145,8 @@ def user_profile_page():
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/best-sellers', methods=["GET"])
 def best_sellers_page():
-    return render_template('BestSellers.html')
+    best_sellers_response = BookRatings().get_best_selling_books()
+    return render_template('BestSellers.html', best_sellers=best_sellers_response)
 
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/advanced-search', methods=["GET"])
@@ -155,10 +156,19 @@ def advanced_search_page():
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/all-books', methods=["GET"])
 def all_books_page():
-    response = Books().get_all_books()
+    pageNo = int(request.args.get('pageNo', default=0))
+    
+    response = Books().get_all_books(pageNo=pageNo)
     book_list = response[0]
     book_count = response[1]
-    return render_template("ViewBooks.html", books=book_list, book_count=book_count)
+
+    if(book_count % 10 == 0):
+        pagination_count = book_count // 10
+    else:
+        pagination_count = (book_count // 10) + 1
+
+
+    return render_template("ViewBooks.html", books=book_list, book_count=book_count, pagination_count=pagination_count, pageNo=pageNo)
 
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/search-by-category', methods=["GET"])
@@ -170,7 +180,7 @@ def search_by_category_page():
 @flask_obj.route('/search-books', methods=["POST","GET"])
 @flask_obj.route('/search-books/<string:search_input>', methods=["POST"])
 def search_books_api(search_input=None):
-
+    pageNo = int(request.args.get('pageNo', default=0))
     genre = request.args.get('genre')
 
     book_name = request.args.get('book_name')
@@ -195,10 +205,9 @@ def search_books_api(search_input=None):
         # book_count = response[1]
 
     elif (search_input):
-        response = Books().get_books_off_search(search_input)
+        response = Books().get_books_off_search(search_value=search_input, pageNo=pageNo)
         book_list = response[0]
         book_count = response[1]
-
     else:
         response = Books().get_books(
             book_name=book_name,
@@ -216,8 +225,15 @@ def search_books_api(search_input=None):
         book_list = response[0]
         book_count = response[1]
 
-    return render_template("ViewBooks.html", books=book_list, book_count=book_count)
+    if(book_count % 10 == 0):
+        pagination_count = book_count // 10
+    else:
+        pagination_count = (book_count // 10) + 1
 
+    return render_template("ViewBooks.html", books=book_list, book_count=book_count, pagination_count=pagination_count, pageNo=pageNo)
+
+
+# Librarian Calls
 @flask_obj.route('/librarian-view', methods=["GET"])
 @admin_access_only
 def librarian_view_page():
@@ -309,9 +325,6 @@ def add_book_rating_api():
         book_isbn = request.form.get('book_isbn')
         rating_value = request.form.get('rating_value')
         BookRatings().add_rating(user_id=user_id, book_isbn=book_isbn, rating_value=rating_value)
-        print(user_id)
-        print(book_isbn)
-        print(rating_value)
     return jsonify({"Success": "ADDED RATING"})
 
 #   

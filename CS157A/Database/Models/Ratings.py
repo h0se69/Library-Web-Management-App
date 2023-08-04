@@ -1,4 +1,5 @@
 from CS157A.Database import mydb, mycursor
+from CS157A.Database.Models.UserActivity import UserActivity
 
 class BookRatings():
 
@@ -30,6 +31,8 @@ class BookRatings():
                 VALUES (%s, %s, %s)
             """
             mycursor.execute(query_insert_rating, (user_id, book_isbn, rating_value))
+            UserActivity().add_activity(user_id=user_id, activity_type="BOOK RATING", activity_msg=f"RATED BOOK: {book_isbn} | {rating_value} ☆")
+
         else:
             query_update_rating = f"""
                 UPDATE BOOK_RATING
@@ -37,6 +40,7 @@ class BookRatings():
                 WHERE user_id=%s AND book_isbn=%s
             """
             mycursor.execute(query_update_rating, (rating_value, user_id, book_isbn))
+            UserActivity().add_activity(user_id=user_id, activity_type="BOOK RATING", activity_msg=f"UPDATED RATING BOOK: {book_isbn} | {rating_value} ☆")
 
         mydb.commit()
 
@@ -64,7 +68,7 @@ class BookRatings():
         except:
            return total_reviews, 0
 
-    def get_all_ratings(self, rating_value:int):
+    def get_books_by_specific_rating(self, rating_value:int):
         query = f"""
             SELECT *
             FROM BOOK_RATING
@@ -76,3 +80,21 @@ class BookRatings():
         columns = [col[0] for col in mycursor.description]
         dict_response = [dict(zip(columns, row)) for row in response]
         return dict_response
+    
+    def get_best_selling_books(self):
+        query = f"""
+            SELECT DISTINCT B.*, AVG(BR.rating_value) as avgRating, COUNT(BR.rating_value) as ratingCount
+            FROM BOOKS B
+            JOIN BOOK_RATING BR
+                ON BR.book_isbn=B.ISBN
+            GROUP BY B.ISBN
+            ORDER BY avgRating DESC
+            LIMIT 9
+        """
+        # Top 9 books only
+        mycursor.execute(query, )
+        response = mycursor.fetchall()
+        columns = [col[0] for col in mycursor.description]
+        dict_response = [dict(zip(columns, row)) for row in response]
+        return dict_response
+    

@@ -45,7 +45,11 @@
                                     </div>
                                     <div class="mt-1 mb-0 text-muted small">
                                         <span>Rating: </span>
+                                    {% if g.authenticated %}
                                         <div class="btn-group">
+                                    {% else %}
+                                        <div class="btn-group" style="pointer-events:none"> <!--Disables the stars if not logged in-->
+                                    {% endif %}
                                             <button type="button" class="btn" data-value="1" id="star_1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="black" class="bi bi-star" viewBox="0 0 16 16">

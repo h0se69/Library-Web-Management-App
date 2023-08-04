@@ -1,7 +1,5 @@
-{% extends "NavBar.html" %}
-
-{% block content %}
-
+{% extends "NavBar.html" %} 
+{% block content %} 
 <head>
     <style>
         /* CSS for layout and styling */
@@ -82,17 +80,16 @@
         }
     </style>
 </head>
-
 <body>
-    <h1>Results: {{book_count}}</h1>
-
-    {% for book in books %}
-        {% set title = book['name'] %}
-        {% set isbn = book['ISBN'] %}
-        {% set description = book['description'] %}
-        {% set author = book['author'] %}
-        {% set image = book['image'] %}
-        <div class="record-container">
+    <section style="background-color: #eee;">
+        <h1>Results: {{book_count}}</h1> 
+        {% for book in books %} 
+            {% set title = book['name'] %}
+            {% set isbn = book['ISBN'] %}
+            {% set description = book['description'] %} 
+            {% set author = book['author'] %}
+            {% set image = book['image'] %} 
+         <div class="record-container">
             <div class="record-image">
                 <div class="record-image-container">
                     <img src="{{image}}" alt="Record Image 1">
@@ -110,38 +107,48 @@
                     <a class="btn btn-success" href="{{url_for('get_book_api', isbn_value=isbn)}}" role="button" id="view_info">View Info</a>
                 </div>
             </div>
-        </div>
-    {% endfor %}
-
-    <script>
-        $(document).ready(function () {
-            $("form[id^='add_to_read_later_form_']").on("submit", function (event) {
-                event.preventDefault();
-                var form = $(this);
-                $.ajax({
-                    url: "{{url_for('add_to_read_later_api')}}",
-                    type: "POST",
-                    data: form.serialize(),
-                    success: function (response) {
-                        if (response.isLoggedIn) {
-                            if(response.Success == false){
-                                alert("Already in your read later list...")
+        </div> {% endfor %} <nav aria-label="pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for(request.endpoint, pageNo=(pageNo-1)) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li> {% for x in range(pagination_count) %} {% if x == pageNo %} <li class="page-item active"> {% else %}
+                <li class="page-item"> {% endif %} <a class="page-link" href="{{ url_for(request.endpoint, pageNo=x) }}">{{x}}</a>
+                </li> {% endfor %} <li class="page-item">
+                    <a class="page-link" href="{{ url_for(request.endpoint, pageNo=(pageNo+1)) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <script>
+            $(document).ready(function() {
+                $("form[id^='add_to_read_later_form_']").on("submit", function(event) {
+                    event.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        url: "{{url_for('add_to_read_later_api')}}",
+                        type: "POST",
+                        data: form.serialize(),
+                        success: function(response) {
+                            if (response.isLoggedIn) {
+                                if (response.Success == false) {
+                                    alert("Already in your read later list...")
+                                } else {
+                                    alert("Added to your read later list")
+                                }
+                            } else {
+                                window.location.href = "{{url_for('login_page')}}";
                             }
-                            else{
-                                alert("Added to your read later list")
-                            }
+                        },
+                        error: function(error) {
+                            console.log("read later ajax error:", error);
                         }
-                        else{
-                            window.location.href = "{{url_for('login_page')}}";
-                        }
-                    },
-                    error: function (error) {
-                        console.log("read later ajax error:", error);
-                    }
+                    });
                 });
             });
-        });
-    </script>
-</body>
-
+        </script>
+    </section>
+</body> 
 {% endblock %}

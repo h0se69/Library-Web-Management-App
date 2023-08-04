@@ -146,6 +146,7 @@
                     success: function (response) {
                        if(response.REMOVE_RESPONSE === true){ 
                             $(`table#read_later_table tr#table_row_${rowId}`).remove();
+                            location.reload();
                         }
                         else{
                             alert("Unable to remove, try refreshing the page")
