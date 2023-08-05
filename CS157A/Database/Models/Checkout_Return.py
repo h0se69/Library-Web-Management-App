@@ -1,7 +1,7 @@
 from typing import Optional
 from CS157A.Database import mydb, mycursor
 import mysql.connector.errors
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Checkout_Return():
@@ -24,7 +24,7 @@ class Checkout_Return():
             returned_date DATE DEFAULT NULL, -- this will keep track of if users returned books
 
             PRIMARY KEY (checkout_id),
-            UNIQUE (user_id, book_id, checkout_date) -- user can check out same book multiple times
+            UNIQUE (user_id, book_id, checkout_date), -- user can check out same book multiple times
             CONSTRAINT fk_library_checkout_book FOREIGN KEY(book_id) REFERENCES LIBRARY_BOOKS(book_id),
             CONSTRAINT fk_library_checkout_user FOREIGN KEY(user_id) REFERENCES USERS(user_id)
         )
@@ -42,19 +42,29 @@ class Checkout_Return():
         )
         """
         query3 = f"""CREATE TABLE IF NOT EXISTS {self.book_queue_table} (
-                user_id INTEGER NOT NULL,
-                ISBN VARCHAR(20),
-                position INTEGER NOT NULL AUTO_INCREMENT, -- this will keep adding on last, even if initail int like (0) is gone, so all you have to do is order by position
+            user_id INT NOT NULL,
+            ISBN VARCHAR(20) NOT NULL,
+            position INT,
+            PRIMARY KEY (user_id, position),
+            UNIQUE (user_id, ISBN)
+        );
 
-                PRIMARY KEY (user_id,ISBN),
-                CONSTRAINT fk_library_queue_book FOREIGN KEY(ISBN) REFERENCES BOOKS(ISBN),
-                CONSTRAINT fk_library_queue_user FOREIGN KEY(user_id) REFERENCES USERS(user_id)
-            )
+        DELIMITER //
+        CREATE TRIGGER before_queue_insert
+        BEFORE INSERT ON queue_table
+        FOR EACH ROW
+        BEGIN
+            DECLARE max_position INT;
+            SELECT COALESCE(MAX(position), 0) INTO max_position FROM queue_table WHERE user_id = NEW.user_id;
+            SET NEW.position = max_position + 1;
+        END;
+        //
+        DELIMITER ;
         """
 
         mycursor.execute(query1)
         mycursor.execute(query2)
-        mycursor.execute(query3)
+        mycursor.execute(query3,multi=True)
 
 
     # Returns a list of avalable books for the provided ISBN
@@ -83,13 +93,22 @@ class Checkout_Return():
 
         return result
 
+    def get_checkout_info(self, checkout_id):
+        query = f"""
+            SELECT * FROM LIBRARY_CHECKOUT
+            WHERE checkout_id = %s
+        """
+        if checkout_id:
+            mycursor.execute(query,(checkout_id,))
+            result = mycursor.fetchall()
+            return result
+            
 
     # Given a user, book_id and a checkout date 
     # Will try to check out book from the library
     #
     # Returns True if the operation was a success, otherwise False
-    # TODO consider making this by automatically ISBN (although this does not make logical sense in a library context)
-    def book_checked_out(self, user_id, book_id, return_by, checkout_date = datetime.today().strftime('%Y-%m-%d')):
+    def book_checked_out(self, user_id, book_id, return_by = (datetime.today() + timedelta(weeks=1)).strftime('%Y-%m-%d'), checkout_date = datetime.today().strftime('%Y-%m-%d')):
         try:
             # if the book has no return date, that means it is already checked out
             check_occupied_query= f"""
@@ -97,7 +116,7 @@ class Checkout_Return():
                 FROM LIBRARY_CHECKOUT
                 WHERE returned_date IS NULL AND book_id = %s
             """
-            mycursor.execute(query,(book_id,))
+            mycursor.execute(check_occupied_query,(book_id,))
             occupied = mycursor.fetchall()
 
             # if the result is not empty then can't check out book,
@@ -112,33 +131,39 @@ class Checkout_Return():
                 mydb.commit()
                 return True
         except mysql.connector.errors.IntegrityError as checkoutError:
-            print(f"duplicateCheckout_error_ook_checked_out: {checkoutError}")
+            print(f"duplicateCheckout_error_book_checked_out: {checkoutError}")
             return False
 
 
     # Either provide the checkout_id and the return_date
     # Or provide user_id, book_id, checkout_date and the return_date
     # TODO make late returns automatically give a fine (add to LIBRARY_FINES) maybe add a field somewhere or a param to this func for fine value
-    def book_returned(self, checkout_id = None, user_id = None, book_id = None, checkout_date=None, return_date = datetime.today().strftime('%Y-%m-%d')):
+    def book_returned(self, checkout_id = None, user_id = None, book_id = None, return_date = datetime.today().strftime('%Y-%m-%d')):
         try:
+            #print(f"cid: {checkout_id} \nuser_id: {user_id} \nbook_id: {book_id} \nreturned_date: {return_date}")
             if checkout_id:
                 query = f"""
                     UPDATE LIBRARY_CHECKOUT 
-                    SET return_date = %s 
+                    SET returned_date = %s 
                     WHERE checkout_id = %s
                 """
-                mycursor.execute(query, (checkout_date, checkout_id))
+                mycursor.execute(query, (return_date, checkout_id))
                 mydb.commit()
-            elif user_id and book_id and checkout_date:
+                return True
+            elif user_id and book_id:
                 query = f"""
                     UPDATE LIBRARY_CHECKOUT 
-                    SET return_date = %s 
-                    WHERE user_id = %s AND book_id = %s AND checkout_date = %s
+                    SET returned_date = %s 
+                    WHERE user_id = %s AND book_id = %s AND returned_date IS NULL
                 """
-                mycursor.execute(query, (return_date, user_id, book_id, checkout_date))
+                mycursor.execute(query, (return_date, user_id, book_id))
                 mydb.commit()
+                return True
+            else: 
+                return False
         except mysql.connector.errors as returnbookError:
-            print(f"return_book_error: {returnbookError}")        
+            print(f"return_book_error: {returnbookError}")
+            return False        
 
 
     # returns user checkout history for a given user
@@ -175,7 +200,7 @@ class Checkout_Return():
     # user_id, book_id (will assume most recent checkout of the book by the user)
     # 
     # will add default fine of 5.01$ with reason default reason late return
-    def add_fee(self, checkout_id = None, user_id = None, book_id = None, amount = 5.01, reason_s = "late return",):
+    def add_fee(self, checkout_id = None, user_id = None, book_id = None, amount = 5.01, reason_s = "late return"):
         if not checkout_id:
             checkout_search = f"""SELECT checkout_id 
                 FROM LIBRARY_CHECKOUT 
@@ -190,15 +215,18 @@ class Checkout_Return():
 
         query = f"""
             INSERT INTO LIBRARY_FINES (checkout_id, amount, reason)
-            VALUES (%s,%s);
+            VALUES (%s,%s,%s);
         """
         if checkout_id:
             try:
                 mycursor.execute(query, (checkout_id, amount, reason_s))
                 mydb.commit()
+                return True
             except mysql.connector.errors.IntegrityError as duplicateFine:
                 print(f"duplicateFine_Error_add_fee: {duplicateFine}")
-    
+                return False
+        else:
+            return False
 
     def resolve_fee(self,checkout_id, user_id, book_id, checkout_date):
         if not checkout_id:

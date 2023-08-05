@@ -73,12 +73,11 @@
     <form action="/perform-return" method="POST">
       <div class="input-row">
         <label for="return-checkout-id">Checkout ID:</label>
-        <input type="number" class="input-box" id="return-checkout-id" name="checkout_id" placeholder="Enter Checkout ID" required>
-        <span class="text-divider">Or</span>
+        <input type="number" class="input-box" id="return-checkout-id" name="checkout_id" placeholder="Enter Checkout ID or">
         <label for="return-book-id">Book ID:</label>
-        <input type="number" class="input-box" id="return-book-id" name="book_id" placeholder="Enter Book ID" required>
+        <input type="number" class="input-box" id="return-book-id" name="book_id" placeholder="Enter Book ID">
         <label for="return-user-id">User ID:</label>
-        <input type="number" class="input-box" id="return-user-id" name="user_id" placeholder="Enter User ID" required>
+        <input type="number" class="input-box" id="return-user-id" name="user_id" placeholder="Enter User ID">
       </div>
       <button type="submit" class="submit-btn">Return</button>
     </form>
@@ -89,12 +88,12 @@
     <form action="/add-fine" method="POST">
       <div class="input-row">
         <label for="fine-checkout-id">Checkout ID:</label>
-        <input type="number" class="input-box" id="fine-checkout-id" name="checkout_id" placeholder="Enter Checkout ID" required>
+        <input type="number" class="input-box" id="fine-checkout-id" name="checkout_id" placeholder="Enter Checkout ID">
         <span class="text-divider">Or</span>
         <label for="fine-book-id">Book ID:</label>
-        <input type="number" class="input-box" id="fine-book-id" name="book_id" placeholder="Enter Book ID" required>
+        <input type="number" class="input-box" id="fine-book-id" name="book_id" placeholder="Enter Book ID">
         <label for="fine-user-id">User ID:</label>
-        <input type="number" class="input-box" id="fine-user-id" name="user_id" placeholder="Enter User ID" required>
+        <input type="number" class="input-box" id="fine-user-id" name="user_id" placeholder="Enter User ID">
         <label for="fine-amount">Amount:</label>
         <input type="number" step="0.01" class="input-box" id="fine-amount" name="amount" placeholder="Enter Fine Amount" required>
       </div>

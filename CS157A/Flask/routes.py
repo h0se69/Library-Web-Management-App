@@ -8,6 +8,8 @@ from CS157A.Flask.Sessions import set_user_session
 from CS157A.HTTP.GoogleBooksAPI import request_books
 from CS157A.Database.Models.Books import Books
 from CS157A.Database.Models.UserActivity import UserActivity
+from CS157A.Database.Models.Checkout_Return import Checkout_Return
+from datetime import datetime,timedelta
 import asyncio
 
 flask_obj.secret_key = 'test-key'
@@ -236,26 +238,77 @@ def search_books_api(search_input=None):
 # Librarian Calls
 @flask_obj.route('/librarian-view', methods=["GET"])
 @admin_access_only
-def librarian_view_page():
+def librarian_view_page(): 
     return render_template('LibrarianView.html')
 
-@flask_obj.route('/perform-view', methods=["POST"])
+@flask_obj.route('/perform-return', methods=["POST"])
 @admin_access_only
 def return_book_api():
     if(request.method == "POST"):
-        pass #TODO I will do these
-    
-@flask_obj.route('/add-fine', methods=["POST"])
-@admin_access_only
-def add_fine_api():
-    if(request.method == "POST"):
-        pass #TODO
+        checkout_id = request.form.get('checkout_id')
+        user_id = request.form.get('user_id')
+        book_id = request.form.get('book_id')
+        if checkout_id:
+            response = Checkout_Return().book_returned(checkout_id=checkout_id)
+        elif user_id and book_id:
+            response = Checkout_Return().book_returned(user_id=user_id, book_id=book_id)    
+        else: 
+            return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
 
+        if(response):
+            if checkout_id:
+                checkout_info = Checkout_Return().get_checkout_info(checkout_id=checkout_id)[0]
+                user_id=checkout_info[1]
+                book_id=checkout_info[2]
+                UserActivity().add_activity(user_id=user_id, activity_type="RETURN", activity_msg=f"RETURNED BOOK: {book_id}") 
+            else:
+                UserActivity().add_activity(user_id=user_id, activity_type="RETURN", activity_msg=f"RETURNED BOOK: {book_id}") 
+            return jsonify({"Success": True, "isAdmin": get_admin_status()}) 
+        else:
+            return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
+    
 @flask_obj.route('/perform-checkout', methods=["POST"])
 @admin_access_only
 def checkout_book_api():
     if(request.method == "POST"):
-        pass #TODO
+        user_id = request.form.get('user_id')
+        book_id = request.form.get('book_id')
+        return_by = (datetime.today() + timedelta(weeks=1)).strftime('%Y-%m-%d')
+        response = Checkout_Return().book_checked_out(user_id=user_id, book_id=book_id, return_by = return_by)
+        if(response):
+            # might be wise to change to ISBN, but this would need another query
+            UserActivity().add_activity(user_id=user_id, activity_type="CHECKOUT", activity_msg=f"CHECKED OUT BOOK: {book_id} RETURN BY {return_by}") 
+            return jsonify({"Success": True, "isAdmin": get_admin_status()}) 
+        else:
+            return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
+@flask_obj.route('/add-fine', methods=["POST"])
+@admin_access_only
+def add_fine_api():
+    if(request.method == "POST"):
+        if(request.method == "POST"):
+            checkout_id = request.form.get('checkout_id')
+            user_id = request.form.get('user_id')
+            book_id = request.form.get('book_id')
+            amount = request.form.get('amount')
+            reason = request.form.get('reason')
+            if checkout_id and amount and reason:
+                response = Checkout_Return().add_fee(checkout_id=checkout_id,amount=amount, reason_s=reason)
+            elif user_id and book_id and amount and reason:
+                response = Checkout_Return().add_fee(user_id=user_id,book_id=book_id,amount=amount, reason_s=reason) 
+            else: 
+                return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
+
+            if(response):
+                if checkout_id:
+                    info = Checkout_Return().get_checkout_info(checkout_id=checkout_id)[0]
+                    user_id=info[1]
+                    book_id=info[2]
+                    UserActivity().add_activity(user_id=user_id, activity_type="FINE", activity_msg=f"FINED FOR BOOK: {book_id} AMOUNT: {amount} REASON: {reason}") 
+                else:
+                    UserActivity().add_activity(user_id=user_id, activity_type="FINED", activity_msg=f"FINED FOR BOOK: {book_id} AMOUNT: {amount} REASON: {reason}") 
+                return jsonify({"Success": True, "isAdmin": get_admin_status()}) 
+            else:
+                return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
 
 @flask_obj.route("/view-book", methods=["GET"])
 def get_book_api(isbn_value=None):
