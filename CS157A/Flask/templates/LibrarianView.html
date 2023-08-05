@@ -3,105 +3,219 @@
 {% block content %}
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Librarian View</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-  .form-container {
-    border: 1px solid grey;
-    padding: 15px;
-    margin-bottom: 20px;
-  }
-  .form-container form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .form-container form h2 {
-    margin: 0 0 10px;
-  }
-  .form-container form .input-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .form-container form label {
-    margin-right: 5px;
-  }
-  .form-container form .input-box {
-    padding: 5px;
-  }
-  .form-container form .text-divider {
-    font-weight: bold;
-    font-size: larger;
-    margin: 0 5px;
-  }
-  .form-container form textarea {
-    width: 100%;
-    padding: 5px;
-    resize: vertical;
-  }
-  .form-container form .submit-btn {
-    background-color: green;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian View</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-container {
+            border: 1px solid grey;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-container form h2 {
+            margin: 0 0 10px;
+        }
+
+        .form-container form .input-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-container form label {
+            margin-right: 5px;
+        }
+
+        .form-container form .input-box {
+            padding: 5px;
+        }
+
+        .form-container form .text-divider {
+            font-weight: bold;
+            font-size: larger;
+            margin: 0 5px;
+        }
+
+        .form-container form textarea {
+            width: 100%;
+            padding: 5px;
+            resize: vertical;
+        }
+
+        .form-container form .submit-btn {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="form-container">
-    <h2>Checkout Book</h2>
-    <form action="/perform-checkout" method="POST">
-      <div class="input-row">
-        <label for="checkout-book-id">Book ID:</label>
-        <input type="number" class="input-box" id="checkout-book-id" name="book_id" placeholder="Enter Book ID" required>
-        <label for="checkout-user-id">User ID:</label>
-        <input type="number" class="input-box" id="checkout-user-id" name="user_id" placeholder="Enter User ID" required>
-      </div>
-      <button type="submit" class="submit-btn">Checkout</button>
-    </form>
-  </div>
+    <div class="form-container">
+        <h2>Checkout Book</h2>
+        <form id="checkout-form">
+            <div class="input-row">
+                <label for="checkout-book-id-label">Book ID:</label>
+                <input type="number" class="input-box" id="checkout-book-id" name="book_id" placeholder="Enter Book ID"
+                    required>
+                <label for="checkout-user-id-label">User ID:</label>
+                <input type="number" class="input-box" id="checkout-user-id" name="user_id" placeholder="Enter User ID"
+                    required>
+            </div>
+            <button type="button" class="submit-btn" id="checkout_button">Checkout</button>
+        </form>
+    </div>
 
-  <div class="form-container">
-    <h2>Return Book</h2>
-    <form action="/perform-return" method="POST">
-      <div class="input-row">
-        <label for="return-checkout-id">Checkout ID:</label>
-        <input type="number" class="input-box" id="return-checkout-id" name="checkout_id" placeholder="Enter Checkout ID or">
-        <label for="return-book-id">Book ID:</label>
-        <input type="number" class="input-box" id="return-book-id" name="book_id" placeholder="Enter Book ID">
-        <label for="return-user-id">User ID:</label>
-        <input type="number" class="input-box" id="return-user-id" name="user_id" placeholder="Enter User ID">
-      </div>
-      <button type="submit" class="submit-btn">Return</button>
-    </form>
-  </div>
+    <div class="form-container">
+        <h2>Return Book</h2>
+        <form if="return-form">
+            <div class="input-row">
+                <label for="return-checkout-id">Checkout ID:</label>
+                <input type="number" class="input-box" id="return-checkout-id" name="checkout_id"
+                    placeholder="Enter Checkout ID or">
+                <label for="return-book-id">Book ID:</label>
+                <input type="number" class="input-box" id="return-book-id" name="book_id" placeholder="Enter Book ID">
+                <label for="return-user-id">User ID:</label>
+                <input type="number" class="input-box" id="return-user-id" name="user_id" placeholder="Enter User ID">
+            </div>
+            <button type="submit" class="submit-btn" id="return_button">Return</button>
+        </form>
+    </div>
 
-  <div class="form-container">
-    <h2>Add Fine</h2>
-    <form action="/add-fine" method="POST">
-      <div class="input-row">
-        <label for="fine-checkout-id">Checkout ID:</label>
-        <input type="number" class="input-box" id="fine-checkout-id" name="checkout_id" placeholder="Enter Checkout ID">
-        <span class="text-divider">Or</span>
-        <label for="fine-book-id">Book ID:</label>
-        <input type="number" class="input-box" id="fine-book-id" name="book_id" placeholder="Enter Book ID">
-        <label for="fine-user-id">User ID:</label>
-        <input type="number" class="input-box" id="fine-user-id" name="user_id" placeholder="Enter User ID">
-        <label for="fine-amount">Amount:</label>
-        <input type="number" step="0.01" class="input-box" id="fine-amount" name="amount" placeholder="Enter Fine Amount" required>
-      </div>
-      <label for="fine-reason">Reason:</label>
-      <textarea id="fine-reason" name="reason" rows="3" placeholder="Enter Reason" required></textarea>
-      <button type="submit" class="submit-btn">Add Fine</button>
-    </form>
-  </div>
+    <div class="form-container">
+        <h2>Add Fine</h2>
+        <form id="fine-form">
+            <div class="input-row">
+                <label for="fine-checkout-id">Checkout ID:</label>
+                <input type="number" class="input-box" id="fine-checkout-id" name="checkout_id"
+                    placeholder="Enter Checkout ID">
+                <span class="text-divider">Or</span>
+                <label for="fine-book-id">Book ID:</label>
+                <input type="number" class="input-box" id="fine-book-id" name="book_id" placeholder="Enter Book ID">
+                <label for="fine-user-id">User ID:</label>
+                <input type="number" class="input-box" id="fine-user-id" name="user_id" placeholder="Enter User ID">
+                <label for="fine-amount">Amount:</label>
+                <input type="number" step="0.01" class="input-box" id="fine-amount" name="amount"
+                    placeholder="Enter Fine Amount" required>
+            </div>
+            <label for="fine-reason">Reason:</label>
+            <textarea id="fine-reason" name="reason" rows="3" placeholder="Enter Reason" required></textarea>
+            <button type="submit" id="add_fine_button" class="submit-btn">Add Fine</button>
+        </form>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#add_fine_button").click(function (event) {
+                event.preventDefault();
+                var checkout_id = $("#fine-checkout-id").val();
+                var user_id = $("#fine-user-id").val();
+                var book_id = $("#fine-book-id").val();
+                var amount = $("#fine-amount").val();
+                var reason = $("#fine-reason").val();
+
+                $.ajax({
+                    url: "{{url_for('add_fine_api')}}",
+                    type: 'POST',
+                    data: {
+                        checkout_id: checkout_id,
+                        user_id: user_id,
+                        book_id: book_id,
+                        amount: amount,
+                        reason: reason,
+                    },
+                    success: function (response) {
+                        if (response.Success) {
+                            alert("Succcessfully added fine!");
+                        } else {
+                            alert("Failed to add fine.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while adding fine.");
+                    }
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#return_button").click(function () {
+                var checkout_id = $("#return-checkout-id").val();
+                var book_id = $("#return-book-id").val();
+                var user_id = $("#return-user-id").val();
+
+                $.ajax({
+                    url: "{{url_for('return_book_api')}}",
+                    type: "POST",
+                    data: {
+                        checkout_id: checkout_id,
+                        book_id: book_id,
+                        user_id: user_id
+                    },
+                    success: function (data) {
+                        if (data.Success) {
+                            alert("Successfully returned book!");
+                        } else {
+                            alert("Error returning book.");
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#checkout_button").click(function () {
+                var book_id = $("#checkout-book-id").val();
+                var user_id = $("#checkout-user-id").val();
+
+                $.ajax({
+                    url: "{{url_for('checkout_book_api')}}",
+                    type: "POST",
+                    data: {
+                        book_id: book_id,
+                        user_id: user_id
+                    },
+                    success: function (data) {
+                        if (data.Success) {
+                            alert("Book successfully checked out!");
+                        } else {
+                            alert("Book is not available");
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+
 </body>
+
 </html>
 {% endblock %}

@@ -61,7 +61,15 @@ class Books():
     # watch the argument order when adding
     # needed to move descrip/date to end due to default value None
     def add_book(self, isbn:str, name:str, book_type:str, description: str=None, publish_date:str=None, page_amount:int=None, image:str=None):
-        name = name[0:499]
+        try:
+            name = name[0:499]
+        except:
+            name = name
+
+        try:
+            description = description[0:4090]
+        except:
+            description = description
         try:
             query = f"""
                 INSERT INTO BOOKS (ISBN, name, description, publish_date, type, page_amt, image)

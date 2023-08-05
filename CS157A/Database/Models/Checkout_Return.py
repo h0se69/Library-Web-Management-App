@@ -41,30 +41,30 @@ class Checkout_Return():
             CONSTRAINT fk_library_fines_checkout_id FOREIGN KEY(checkout_id) REFERENCES LIBRARY_CHECKOUT(checkout_id)
         )
         """
-        query3 = f"""CREATE TABLE IF NOT EXISTS {self.book_queue_table} (
+        query3 = f"""CREATE TABLE IF NOT EXISTS LIBRARY_BOOK_QUEUE (
             user_id INT NOT NULL,
             ISBN VARCHAR(20) NOT NULL,
             position INT,
             PRIMARY KEY (user_id, position),
             UNIQUE (user_id, ISBN)
-        );
-
-        DELIMITER //
-        CREATE TRIGGER before_queue_insert
-        BEFORE INSERT ON queue_table
-        FOR EACH ROW
-        BEGIN
-            DECLARE max_position INT;
-            SELECT COALESCE(MAX(position), 0) INTO max_position FROM queue_table WHERE user_id = NEW.user_id;
-            SET NEW.position = max_position + 1;
-        END;
-        //
-        DELIMITER ;
-        """
+        );"""
+        query4 = f"""CREATE TRIGGER before_queue_insert
+            BEFORE INSERT ON LIBRARY_BOOK_QUEUE
+            FOR EACH ROW
+            BEGIN
+                DECLARE max_position INT;
+                SELECT COALESCE(MAX(position), 0) INTO max_position FROM LIBRARY_BOOK_QUEUE WHERE user_id = NEW.user_id;
+                SET NEW.position = max_position + 1;
+            END;"""
 
         mycursor.execute(query1)
         mycursor.execute(query2)
-        mycursor.execute(query3,multi=True)
+        mycursor.execute(query3)
+
+        try:
+            mycursor.execute(query4)
+        except:
+            print("Trigger duplicate")
 
 
     # Returns a list of avalable books for the provided ISBN
@@ -122,6 +122,7 @@ class Checkout_Return():
             # if the result is not empty then can't check out book,
             # otherwise the list is empty and you can check out book
             if occupied:
+                print("Book is occupied")
                 return False
             else:
                 query = f"""
@@ -250,3 +251,31 @@ class Checkout_Return():
                 mydb.commit()
             except mysql.connector.errors.IntegrityError as Fine:
                 print(f"Fine_Error_resolve_fee: {Fine}")
+
+    def is_book_checked_out(self, book_id):
+        check_occupied_query= f"""
+            SELECT book_id, returned_date
+            FROM LIBRARY_CHECKOUT
+            WHERE returned_date IS NULL AND book_id = %s
+        """
+        mycursor.execute(check_occupied_query,(book_id,))
+        occupied = mycursor.fetchall()
+
+        if occupied:
+            return False
+        else:
+            return True
+        
+    def is_same_checkout_user(self, user_id:int, book_id):
+        query = f"""
+            SELECT *
+            FROM LIBRARY_CHECKOUT
+            WHERE user_id = %s AND book_id = %s
+        """
+        mycursor.execute(query, (user_id, book_id))
+        isSame = mycursor.fetchall()
+
+        if isSame:
+            return True
+        else:
+            return False

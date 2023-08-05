@@ -45,74 +45,82 @@
                                     </div>
                                     <div class="mt-1 mb-0 text-muted small">
                                         <span>Rating: </span>
-                                    {% if g.authenticated %}
+                                        {% if g.authenticated %}
                                         <div class="btn-group">
-                                    {% else %}
-                                        <div class="btn-group" style="pointer-events:none"> <!--Disables the stars if not logged in-->
-                                    {% endif %}
-                                            <button type="button" class="btn" data-value="1" id="star_1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
-                                                    </path>
-                                                </svg>
-                                                <span class="visually-hidden">Star 1</span>
-                                            </button>
-                                            <button type="button" class="btn" data-value="2" id="star_2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
-                                                    </path>
-                                                </svg>
-                                                <span class="visually-hidden">Star 2</span>
-                                            </button>
-                                            <button type="button" class="btn" data-value="3" id="star_3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
-                                                    </path>
-                                                </svg>
-                                                <span class="visually-hidden">Star 3</span>
-                                            </button>
-                                            <button type="button" class="btn" data-value="4" id="star_4">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
-                                                    </path>
-                                                </svg>
-                                                <span class="visually-hidden">Star 4</span>
-                                            </button>
-                                            <button type="button" class="btn" data-value="5" id="star_5">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="black" class="bi bi-star" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
-                                                    </path>
-                                                </svg>
-                                                <span class="visually-hidden">Star 5</span>
-                                            </button>
+                                            {% else %}
+                                            <div class="btn-group" style="pointer-events:none">
+                                                <!--Disables the stars if not logged in-->
+                                                {% endif %}
+                                                <button type="button" class="btn" data-value="1" id="star_1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="visually-hidden">Star 1</span>
+                                                </button>
+                                                <button type="button" class="btn" data-value="2" id="star_2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="visually-hidden">Star 2</span>
+                                                </button>
+                                                <button type="button" class="btn" data-value="3" id="star_3">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="visually-hidden">Star 3</span>
+                                                </button>
+                                                <button type="button" class="btn" data-value="4" id="star_4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="visually-hidden">Star 4</span>
+                                                </button>
+                                                <button type="button" class="btn" data-value="5" id="star_5">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        fill="black" class="bi bi-star" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="visually-hidden">Star 5</span>
+                                                </button>
+                                            </div>
+                                            <i class="text-primary">Total Reviews: {{total_reviews}}</i>
                                         </div>
-                                        <i class="text-primary">Total Reviews: {{total_reviews}}</i>
+                                        <p class="text-truncate mb-4 mb-md-0">
+                                            {{book_description}}
+                                        </p>
                                     </div>
-                                    <p class="text-truncate mb-4 mb-md-0">
-                                        {{book_description}}
-                                    </p>
-                                </div>
-                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
-                                    <h6 class="text-danger">Available Copies: xx</h6>
-                                    <h6 class="text-success">Total Copies: xx</h6>
-                                    <div class="d-flex flex-column mt-4">
-                                        <button class="btn btn-success btn-sm" type="button">Checkout? Reserve?</button>
-                                        <form id="add_to_read_later_form_{{ book_isbn }}" method="POST">
-                                            <input type="hidden" name="book_isbn" value="{{ book_isbn }}"> <br>
-                                            <button type="submit" class="btn btn-primary btn-sm"
-                                                data-form-id="{{ book_isbn }}" style="width: 100%;">Add to Read
-                                                Later</button>
-                                        </form>
+                                    <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                        <h6 class="text-danger">Available Copies: xx</h6>
+                                        <h6 class="text-success">Total Copies: xx</h6>
+                                        <div class="d-flex flex-column mt-4">
+                                            {%if is_available %}
+                                                <button class="btn btn-success btn-sm" type="button" id="checkout_button">Checkout</button>
+                                            {% elif is_same_user %}
+                                                <button class="btn btn-warning btn-sm" type="button" id="return_button_user">Return Book</button>
+                                            {% else %}
+                                                <button class="btn btn-danger btn-sm" type="button" id="checkout_button">Reserve</button>
+                                            {% endif %}
+                                            <form id="add_to_read_later_form_{{ book_isbn }}" method="POST">
+                                                <input type="hidden" name="book_isbn" value="{{ book_isbn }}"> <br>
+                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                    data-form-id="{{ book_isbn }}" style="width: 100%;">Add to Read
+                                                    Later</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +128,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </section>
     <section style="background-color: #eee;" id="detail_section">
         <div class="container py-5" style="margin-top: -80px;">
@@ -227,17 +234,17 @@
     </section>
 
     <script>
-        if("{{user_rating}}" == 1){
+        if ("{{user_rating}}" == 1) {
             var element = document.getElementById('star_1');
             element.style.backgroundColor = 'red';
         }
-        else if("{{user_rating}}" == 2){
+        else if ("{{user_rating}}" == 2) {
             var element = document.getElementById('star_1');
             element.style.backgroundColor = 'red';
             var element = document.getElementById('star_2');
             element.style.backgroundColor = 'red';
         }
-        else if("{{user_rating}}" == 3){
+        else if ("{{user_rating}}" == 3) {
             var element = document.getElementById('star_1');
             element.style.backgroundColor = 'yellow';
             element.classList.remove = 'btn-outline-danger';
@@ -251,7 +258,7 @@
             var element = document.getElementById('star_3');
             element.style.backgroundColor = 'yellow';
         }
-        else if("{{user_rating}}" == 4){
+        else if ("{{user_rating}}" == 4) {
             var element = document.getElementById('star_1');
             element.style.backgroundColor = 'green';
             element.classList.remove = 'btn-outline-danger';
@@ -270,7 +277,7 @@
             var element = document.getElementById('star_4');
             element.style.backgroundColor = 'green';
         }
-        else if("{{user_rating}}" == 5){
+        else if ("{{user_rating}}" == 5) {
             var element = document.getElementById('star_1');
             element.style.backgroundColor = 'green';
             element.classList.remove = 'btn-outline-danger';
@@ -296,22 +303,22 @@
 
 
     <script>
-        $(document).ready(function() {
-            $("button[id^='star_']").on('click', function() {
+        $(document).ready(function () {
+            $("button[id^='star_']").on('click', function () {
                 const value = $(this).data('value');
-    
+
                 $.ajax({
                     url: "{{url_for('add_book_rating_api')}}",
                     type: 'POST',
-                    data: { 
+                    data: {
                         "rating_value": value,
                         "book_isbn": "{{book_isbn}}"
-                    }, 
-                    success: function(response) {
+                    },
+                    success: function (response) {
                         console.log(`add_book_rating_api response: ${response}`);
                         location.reload();
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.log(`add_book_rating_api error response: ${response}`);
                     }
                 });
@@ -348,6 +355,60 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#checkout_button").click(function () {
+                $.ajax({
+                    url: "{{url_for('checkout_book_api')}}",
+                    type: "POST",
+                    data: {
+                        book_id: "{{book_book_id}}",
+                        user_id: "{{g.user_id}}"
+                    },
+                    success: function (data) {
+                        if (data.Success) {
+                            alert("Book successfully checked out!");
+                            location.reload();
+                        } else {
+                            alert("Book is not available");
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $("#return_button_user").click(function () {
+            $.ajax({
+                url: "{{url_for('return_book_api')}}",
+                type: "POST",
+                data: {
+                    book_id: "{{book_book_id}}",
+                    user_id: "{{g.user_id}}"
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        alert("Successfully returned book!");
+                        location.reload();
+                    } else {
+                        alert("Error returning book.");
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+
 </div>
 
 {% endblock %}

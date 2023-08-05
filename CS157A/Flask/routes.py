@@ -147,8 +147,12 @@ def user_profile_page():
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/best-sellers', methods=["GET"])
 def best_sellers_page():
-    best_sellers_response = BookRatings().get_best_selling_books()
-    return render_template('BestSellers.html', best_sellers=best_sellers_response)
+    try:
+        best_sellers_response = BookRatings().get_best_selling_books()
+        return render_template('BestSellers.html', best_sellers=best_sellers_response)
+    except:
+        best_sellers_response = None
+        return render_template('BestSellers.html')
 
 #  ________________NAVBAR ITEM________________
 @flask_obj.route('/advanced-search', methods=["GET"])
@@ -242,7 +246,7 @@ def librarian_view_page():
     return render_template('LibrarianView.html')
 
 @flask_obj.route('/perform-return', methods=["POST"])
-@admin_access_only
+@login_required
 def return_book_api():
     if(request.method == "POST"):
         checkout_id = request.form.get('checkout_id')
@@ -263,24 +267,27 @@ def return_book_api():
                 UserActivity().add_activity(user_id=user_id, activity_type="RETURN", activity_msg=f"RETURNED BOOK: {book_id}") 
             else:
                 UserActivity().add_activity(user_id=user_id, activity_type="RETURN", activity_msg=f"RETURNED BOOK: {book_id}") 
-            return jsonify({"Success": True, "isAdmin": get_admin_status()}) 
+            return jsonify({"Success": True, "isLoggedIn": is_logged_in()}) 
         else:
-            return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
+            return jsonify({"Success": False, "isLoggedIn": is_logged_in()}) 
     
 @flask_obj.route('/perform-checkout', methods=["POST"])
-@admin_access_only
+@login_required
 def checkout_book_api():
     if(request.method == "POST"):
+        print(request.form)
         user_id = request.form.get('user_id')
         book_id = request.form.get('book_id')
         return_by = (datetime.today() + timedelta(weeks=1)).strftime('%Y-%m-%d')
         response = Checkout_Return().book_checked_out(user_id=user_id, book_id=book_id, return_by = return_by)
+
         if(response):
             # might be wise to change to ISBN, but this would need another query
             UserActivity().add_activity(user_id=user_id, activity_type="CHECKOUT", activity_msg=f"CHECKED OUT BOOK: {book_id} RETURN BY {return_by}") 
-            return jsonify({"Success": True, "isAdmin": get_admin_status()}) 
+            return jsonify({"Success": True, "isLoggedIn": is_logged_in()}) 
         else:
-            return jsonify({"Success": False, "isAdmin": get_admin_status()}) 
+            return jsonify({"Success": False, "isLoggedIn": is_logged_in()}) 
+        
 @flask_obj.route('/add-fine', methods=["POST"])
 @admin_access_only
 def add_fine_api():
@@ -326,10 +333,16 @@ def get_book_api(isbn_value=None):
 
     user_id = get_user_id()
 
+    book_id = book_data_response[0].get("book_id")
+    is_available = Checkout_Return().is_book_checked_out(book_id=book_id)
+
+    is_same_user = Checkout_Return().is_same_checkout_user(user_id=user_id, book_id=book_id)
+
+
     total_reviews, user_rating = BookRatings().get_specific_book_ratings_count(book_isbn=isbn_value, user_id=user_id)
     user_rating = int(user_rating)
 
-    return render_template("SpecificBook.html", book_data=book_data_response, recommendations=recommended_books, total_reviews=total_reviews, user_rating=user_rating)
+    return render_template("SpecificBook.html", book_data=book_data_response, recommendations=recommended_books, total_reviews=total_reviews, user_rating=user_rating, is_available=is_available, is_same_user=is_same_user)
 
 
 
