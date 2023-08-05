@@ -278,7 +278,7 @@ def checkout_book_api():
         print(request.form)
         user_id = request.form.get('user_id')
         book_id = request.form.get('book_id')
-        return_by = (datetime.today() + timedelta(weeks=1))
+        return_by = (datetime.now() + timedelta(weeks=1))
         response = Checkout_Return().book_checked_out(user_id=user_id, book_id=book_id, return_by = return_by)
 
         if(response):

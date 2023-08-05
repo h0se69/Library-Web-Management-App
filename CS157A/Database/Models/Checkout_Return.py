@@ -108,7 +108,7 @@ class Checkout_Return():
     # Will try to check out book from the library
     #
     # Returns True if the operation was a success, otherwise False
-    def book_checked_out(self, user_id, book_id, return_by = (datetime.today() + timedelta(weeks=1)), checkout_date = datetime.today()):
+    def book_checked_out(self, user_id, book_id, return_by = (datetime.now() + timedelta(weeks=1)), checkout_date = datetime.now()):
         try:
             # if the book has no return date, that means it is already checked out
             check_occupied_query= f"""
@@ -139,7 +139,7 @@ class Checkout_Return():
     # Either provide the checkout_id and the return_date
     # Or provide user_id, book_id, checkout_date and the return_date
     # TODO make late returns automatically give a fine (add to LIBRARY_FINES) maybe add a field somewhere or a param to this func for fine value
-    def book_returned(self, checkout_id = None, user_id = None, book_id = None, return_date = datetime.today()):
+    def book_returned(self, checkout_id = None, user_id = None, book_id = None, return_date = datetime.now()):
         try:
             #print(f"cid: {checkout_id} \nuser_id: {user_id} \nbook_id: {book_id} \nreturned_date: {return_date}")
             if checkout_id:
