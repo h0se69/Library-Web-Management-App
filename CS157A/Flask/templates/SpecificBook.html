@@ -109,7 +109,7 @@
                                         <div class="d-flex flex-column mt-4">
                                             {%if is_available %}
                                                 <button class="btn btn-success btn-sm" type="button" id="checkout_button">Checkout</button>
-                                            {% elif is_same_user %}
+                                            {% elif is_same_user and not is_available %}
                                                 <button class="btn btn-warning btn-sm" type="button" id="return_button_user">Return Book</button>
                                             {% else %}
                                                 <button class="btn btn-danger btn-sm" type="button" id="checkout_button">Reserve</button>

@@ -270,11 +270,11 @@ class Checkout_Return():
         query = f"""
             SELECT *
             FROM LIBRARY_CHECKOUT
-            WHERE user_id = %s AND book_id = %s
+            WHERE user_id = %s AND book_id = %s AND returned_date is NULL
         """
         mycursor.execute(query, (user_id, book_id))
         isSame = mycursor.fetchall()
-
+        print(isSame)
         if isSame:
             return True
         else:
