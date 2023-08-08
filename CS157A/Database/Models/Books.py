@@ -173,9 +173,9 @@ class Books():
                 ON B.ISBN=BA.ISBN
             JOIN BOOK_GENRES BG 
                 ON B.ISBN=BG.ISBN
-            WHERE BG.genre='{genre}'
+            WHERE BG.genre=%s
         """
-        mycursor.execute(query)
+        mycursor.execute(query, (genre, ))
 
         response = mycursor.fetchall()
         columns = [column[0] for column in mycursor.description]
@@ -255,7 +255,7 @@ class Books():
 
             if author_names:
                 for author in author_names:
-                    query += f" AND EXISTS (SELECT 1 FROM Book_Authors WHERE Books.ISBN = Book_Authors.ISBN AND author = '{author}')\n"
+                    query += f" AND EXISTS (SELECT 1 FROM Book_Authors WHERE Books.ISBN = Book_Authors.ISBN AND author LIKE '{author}')\n"
                     # needs to be checked
                     # probably should be rewritten because efficiency
 
