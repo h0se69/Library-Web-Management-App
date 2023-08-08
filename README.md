@@ -83,7 +83,7 @@ Open a PR/Issue we are happy to help
 
 ## Demo
 
-https://www.dropbox.com/scl/fi/m0q83wym9q2v39bsv1ak2/2023-08-05-15-20-31.mkv?rlkey=8bib4ytrom1ak282gy1neyld2&dl=0
+[Video](https://www.dropbox.com/scl/fi/emqump752vfglx37iuwv4/2023-08-06-15-14-56_trimmed.mkv?dl=0&rlkey=hf3cbcexf7lxx6k8lz7wiyb8m)
 ## Division of Work
 **Jose Jr. Betancourt Huizar**:
 ```bash
